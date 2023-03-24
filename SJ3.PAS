@@ -1,6 +1,7 @@
 program Skijump3; { Reality Strikes }
 uses crt, dos, sj3graph, sj3pcx, sj3unit, sj3help, sj3info,
-     sj3list, sj3table, maki, lumi, tuuli, sj3lang, sj3repl, sdlport;
+     sj3list, sj3table, maki, lumi, tuuli, sj3lang, sj3repl, sdlport,
+     sj3pl;
 
 const
 
@@ -5597,17 +5598,18 @@ begin
 
   MainMenuText(1,version_full);
 
-  index:=MakeMenu(11,97,108,12,6,index,8,4,0);
+  index:=MakeMenu(11,100,108,10,7,index,8,4,0);
 
   case (index) of
-   1 : begin cupstyle:=0; cup; end;
-   2 : begin cupstyle:=1; cup; end;
-   3 : begin cupstyle:=2; cup; end;
+   1 : training; {TODO}
+   2 : begin cupstyle:=0; cup; end;
+   3 : begin cupstyle:=1; cup; end;
+   4 : begin cupstyle:=2; cup; end;
 {$IFDEF REG}
-   4 : teamcup;
+   5 : teamcup;
 {$ENDIF}
-   5 : newkingofthehill;
-   6 : training;
+   6 : newkingofthehill;
+   7 : training;
   end;
 
   if (index<>0) then drawfullmain;
@@ -5645,7 +5647,7 @@ begin
 
 {  index:=MakeMenu(30,69,110,10,8,index,243,0,6); }
 
-  index:=MakeMenu(11,97,108,12,6,index,8,4,2);
+  index:=MakeMenu(11,100,108,10,7,index,8,4,2);
 
   case index of
    1 : jumpmenu;
@@ -5658,10 +5660,11 @@ begin
         LoadNames(namenumber,jmaara,TeamLineup,true);
        end;
    3 : setupmenu;
-   4 : showtops(0);
-   5 : if (NumExtraHills>0) then showtops(1)
+   4 : sj3pl.ResultsMenu;
+   5 : showtops(0);
+   6 : if (NumExtraHills>0) then showtops(1)
                             else showtops(2);
-   6 : replays(false,version,gdetail);
+   7 : replays(false,version,gdetail);
 
 {    testanims; }
 

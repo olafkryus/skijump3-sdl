@@ -123,8 +123,8 @@ procedure teamwarning;
 
 procedure newunregtext;
 
-{procedure mainmenutext(phase:byte;reg:boolean); }
-procedure mainmenutext(phase:byte;version:string);
+{procedure MainMenuText(phase:byte;reg:boolean); }
+procedure MainMenuText(phase:byte;version:string);
 procedure unregendtext;
 procedure newregtext(regname,regnumber:string);
 procedure regendtext(regname,regnumber:string);
@@ -2868,8 +2868,10 @@ begin
 end;
 
 
-procedure mainmenutext(phase:byte;version:string);
-var x,y, temp, num : integer;
+{ phase: 0 - MainMenu, 1 - JumpMenu }
+procedure MainMenuText(phase:byte;version:string);
+var x,y,height,items, temp, num : integer;
+    text : string;
 begin
 
   x:=11;
@@ -2884,20 +2886,28 @@ begin
 
  if (phase=1) then
   begin
+  height := 10;
+  items := 7;
 
    FillBox(1,94,116,199,8);
 {   FillArea(2,51,149,179,63); }
 
-   for temp:=1 to 7 do
+   for temp:=1 to (items+1) do
     begin
-     y:=86+temp*12;
+     y:=90+temp*height;
      num:=temp;
-     if (temp=7) then begin inc(y,12); num:=0; end;
+     if (temp=(items+1)) then begin inc(y,height); num:=0; end;
+     if (temp=1) then fontcolor(246);
+     if (temp=2) then fontcolor(240);
 {$IFNDEF REG}
-     if (temp=4) then fontcolor(241);
+     if (temp=5) then fontcolor(241);
 {$ENDIF}
-     if (temp=5) then fontcolor(240);
-     writefont(x,y,txt(num)+' - '+lstr(temp+26));
+     if (temp=6) then fontcolor(240);
+     case (temp) of
+       1: text := 'GRAJ ONLINE';
+       2..8: text := lstr(temp+25);
+     end;
+     writefont(x,y,txt(num)+' - '+text);
     end;
 
   end;
@@ -2905,13 +2915,22 @@ begin
 
  if (phase=0) then
   begin
-   for temp:=1 to 7 do
+  height := 10;
+  items := 7;
+   for temp:=1 to (items+1) do
     begin
-     y:=86+temp*12;
+     y:=90+temp*height;
       num:=temp;
-     if (temp=7) then begin inc(y,12); num:=0; end;
+     if (temp=(items+1)) then begin inc(y,height); num:=0; end;
+     if (temp=4) then fontcolor(246);
+     if (temp=5) then fontcolor(240);
+     case (temp) of
+       1..3: text := lstr(temp+19);
+       4: text := 'BAZA WYNIKOW';
+       5..8: text := lstr(temp+18);
+     end;
 
-     writefont(x,y,txt(num)+' - '+lstr(temp+19));
+     writefont(x,y,txt(num)+' - '+text);
 
     end;
 
