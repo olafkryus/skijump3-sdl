@@ -11,6 +11,7 @@ const
 var
 
  version, version_full : string[10];
+ copyright : string[37];
 
  ActHill : hill_type;
 
@@ -5708,7 +5709,7 @@ begin
  writeln('');
  writeln('-------');
  writeln('');
- writeln('SJ3 v',version,' by Ville Könönen 2011');
+ writeln(copyright);
 
  write('- Loading ANIM.SKI');
   LoadAnim('ANIM.SKI');
@@ -5774,7 +5775,7 @@ end;
 procedure loppu;
 begin
 
- writeln('SJ3 v',version,' by Ville Könönen 2013');
+ writeln(copyright);
 
  GetNow(Now);
 
@@ -5848,6 +5849,7 @@ begin  { MAIN }
 
  version:='3.13';
  version_full:=version+'-'+SdlPort.GetVersion;
+ copyright:='SJ3 v'+version+' by Ville Könönen 2013';
 
 (* ex:=true;    { expert-mode } *)
 
