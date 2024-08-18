@@ -19,6 +19,7 @@ interface
   function KeyPressed : boolean;
   procedure WaitForKeyPress(var ch1, ch2 : char);
 
+  procedure Beep(beeptapa : byte, ticks : integer);
   procedure Wait(ticks : integer);
 
 implementation
@@ -30,6 +31,8 @@ implementation
         targetFrames = 70;
         aspectRes: real = xRes / yRes;
         msPerTick: real = 1000 / 18.2065; { typical IBM PC PIT system clock tick rate }
+        audioSamplingFrequency = 18939; { typical IBM PC speaker sample rate }
+        audioBufferSize = 8192;
 
   var windowMultiplier: integer;
       window: PSDL_Window;
@@ -49,6 +52,8 @@ implementation
       closeCallback: TCloseCallback;
 
       swRendering: boolean;
+
+      audioDeviceID: TSDL_AudioDeviceID;
 
 procedure GetArguments;
 var c : char;
@@ -139,6 +144,7 @@ end;
 
 procedure Init;
 var rendererFlags : UInt32;
+    audioSpec : TSDL_AudioSpec;
 begin
   rendererFlags := 0;
   windowMultiplier := 2;
@@ -147,7 +153,7 @@ begin
 
   GetArguments;
 
-  if SDL_Init( SDL_INIT_VIDEO or SDL_INIT_TIMER ) < 0 then HALT;
+  if SDL_Init( SDL_INIT_VIDEO or SDL_INIT_TIMER or SDL_INIT_AUDIO ) < 0 then HALT;
 
   window := SDL_CreateWindow('Ski Jump International v3',
             SDL_WINDOWPOS_UNDEFINED,
@@ -194,6 +200,14 @@ begin
   timer := SDL_AddTimer(1, TimerCallback, nil);
 
   closeCallback := nil;
+
+  audioSpec.freq := audioSamplingFrequency;
+  audioSpec.format := AUDIO_U8;
+  audioSpec.channels := 1;
+  audioSpec.samples := audioBufferSize;
+  audioSpec.callback := nil;
+  audioDeviceID := SDL_OpenAudioDevice(nil, 0, @audioSpec, nil, 0);
+  if audioDeviceID > 0 then SDL_PauseAudioDevice(audioDeviceID, 0) else writeln('Failed to initialize audio.');
 end;
 
 procedure DeinitGraphics;
@@ -208,6 +222,7 @@ end;
 
 procedure Deinit;
 begin
+  if audioDeviceID > 0 then SDL_CloseAudioDevice(audioDeviceID);
   SDL_Quit;
 end;
 
@@ -581,6 +596,32 @@ begin
     end;
     SDL_Delay(10);
   end;
+end;
+
+procedure Beep(beeptapa : byte, ticks : integer); { beeptapa = kHz }
+var data: array[1..audioBufferSize] of byte;
+    i, beepSampleCount, oscillationSampleCount: integer;
+begin
+  if audioDeviceID <= 0 then exit;
+
+  (*
+   * IBM PC speaker emulation.
+   * Square wave for the beep duration, then neutral signal to fill in the SDL audio buffer.
+   * Only 25% of maximum possible gain so the player does not go deaf ;)
+   *)
+  beepSampleCount := Round(ticks * (msPerTick / 1000) * audioSamplingFrequency);
+  oscillationSampleCount := Round(audioSamplingFrequency / (beeptapa * 1000));
+  for i:=1 to audioBufferSize do
+    if i > beepSampleCount then
+      data[i] := $80
+    else if (i mod oscillationSampleCount) < Round(oscillationSampleCount / 2) then
+      data[i] := $80 + $20
+    else
+      data[i] := $80 - $20;
+
+  SDL_ClearQueuedAudio(audioDeviceID);
+  SDL_QueueAudio(audioDeviceID, @data, SizeOf(data));
+  Wait(ticks);
 end;
 
 procedure Wait(ticks : integer);
