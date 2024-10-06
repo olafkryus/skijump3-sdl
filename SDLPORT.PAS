@@ -4,6 +4,8 @@ interface
 
   type TPalette = Array[0..255,0..2] of byte;
   type TCloseCallback = procedure;
+  type AnsiStringCP865 = type AnsiString(865);
+  type TCharToUTF8Table = array[#128..#255] of RawByteString;
 
   function GetVersion : string;
 
@@ -20,6 +22,9 @@ interface
   procedure WaitForKeyPress(var ch1, ch2 : char);
 
   procedure Wait(ms : integer);
+
+  function IsCP865(s : string): boolean;
+  function ConvertToUTF8(s : string): UTF8String;
 
 implementation
 
@@ -475,7 +480,7 @@ begin
             SDLK_KP_PERIOD : keyPressed:=SDLK_DELETE;
           end;
         end;
-        
+
         // Merge keypad characters with their regular counterparts.
         // It is not needed to differentiate between them, since the scancode isn't checked for normal characters.
         // Checks for Shift and Num Lock were already done, so they won't interfere with the merge.
@@ -585,6 +590,186 @@ end;
 procedure Wait(ms : integer);
 begin
   SDL_Delay(ms);
+end;
+
+function IsCP865(s : string): boolean;
+var i, l : integer;
+begin
+  l := Length(s);
+  IsCP865 := false; { by default we assume it's not CP865 to not trigger unnecessary conversion if text is ASCII-only }
+  for i := 1 to l do
+  begin
+    case s[i] of
+      { sharp S / beta - only printable CP865 char in SJ3 which could be also an UTF-8 codepoint initial byte }
+      #225 :
+        { next 2 bytes fit continuation pattern for a 3-byte UTF-8 codepoint, so assume UTF-8 }
+        { or it was some very unlikely CP865 char sequence - YOLO! }
+        if (i+2 < l) and (s[i+1] in [#195..#244]) and (s[i+2] in [#195..#244]) then
+          exit(false)
+        { otherwise assume it was a CP865 encoded sharp S / beta }
+        else
+          exit(true);
+
+      { encountered an UTF-8 codepoint initial byte that is not a printable CP865 char in SJ3 }
+      #195..#224, #226..#244 : exit(false);
+
+      { if there was no UTF-8 codepoint initial byte already then any extended ASCII char indicates CP865 }
+      #128..#194, #245..#255 : exit(true);
+
+      { otherwise keep checking next bytes... }
+    end;
+  end;
+end;
+
+function ConvertToUTF8(s : string): UTF8String;
+const ArrayCP865ToUTF8 : TCharToUTF8Table = (
+  'Ç', // #128
+  'ü', // #129
+  'é', // #130
+  'â', // #131
+  'ä', // #132
+  'à', // #133
+  'å', // #134
+  'ç', // #135
+  'ê', // #136
+  'ë', // #137
+  'è', // #138
+  'ï', // #139
+  'î', // #140
+  'ì', // #141
+  'Ä', // #142
+  'Å', // #143
+  'É', // #144
+  'æ', // #145
+  'Æ', // #146
+  'ô', // #147
+  'ö', // #148
+  'ò', // #149
+  'û', // #150
+  'ù', // #151
+  'ÿ', // #152
+  'Ö', // #153
+  'Ü', // #154
+  'ø', // #155
+  '£', // #156
+  'Ø', // #157
+  '₧', // #158
+  'ƒ', // #159
+  'á', // #160
+  'í', // #161
+  'ó', // #162
+  'ú', // #163
+  'ñ', // #164
+  'Ñ', // #165
+  'ª', // #166
+  'º', // #167
+  '¿', // #168
+  '⌐', // #169
+  '¬', // #170
+  'm', // #171 { exception due to old SJ3 logic ! }
+  '¼', // #172
+  '¡', // #173
+  '«', // #174
+  '¤', // #175
+  '░', // #176
+  '▒', // #177
+  '▓', // #178
+  '│', // #179
+  '┤', // #180
+  '╡', // #181
+  '╢', // #182
+  '╖', // #183
+  '╕', // #184
+  '╣', // #185
+  '║', // #186
+  '╗', // #187
+  '╝', // #188
+  '╜', // #189
+  '╛', // #190
+  '┐', // #191
+  '└', // #192
+  '┴', // #193
+  '┬', // #194
+  '├', // #195
+  '─', // #196
+  '┼', // #197
+  '╞', // #198
+  '╟', // #199
+  '╚', // #200
+  '╔', // #201
+  '╩', // #202
+  '╦', // #203
+  '╠', // #204
+  '═', // #205
+  '╬', // #206
+  '╧', // #207
+  '╨', // #208
+  '╤', // #209
+  '╥', // #210
+  '╙', // #211
+  '╘', // #212
+  '╒', // #213
+  '╓', // #214
+  '╫', // #215
+  '╪', // #216
+  '┘', // #217
+  '┌', // #218
+  '█', // #219
+  '▄', // #220
+  '▌', // #221
+  '▐', // #222
+  '▀', // #223
+  'α', // #224
+  'ß', // #225
+  'Γ', // #226
+  'π', // #227
+  'Σ', // #228
+  'σ', // #229
+  'μ', // #230
+  'τ', // #231
+  'Φ', // #232
+  'Θ', // #233
+  'Ω', // #234
+  'δ', // #235
+  '∞', // #236
+  'φ', // #237
+  'ε', // #238
+  '∩', // #239
+  '≡', // #240
+  '±', // #241
+  '≥', // #242
+  '≤', // #243
+  '⌠', // #244
+  '⌡', // #245
+  '÷', // #246
+  '≈', // #247
+  '°', // #248
+  '∙', // #249
+  '·', // #250
+  '√', // #251
+  'ⁿ', // #252
+  '²', // #253
+  '■', // #254
+  ' '  // #255
+);
+var i, l : integer;
+    tmp : UTF8String;
+begin
+  tmp := '';
+  if IsCP865(s) then
+    begin
+      l := Length(s);
+      for i:=1 to l do
+      begin
+        if s[i] > #127 then
+          tmp += ArrayCP865ToUTF8[s[i]]
+        else
+          tmp += s[i];
+      end;
+      ConvertToUTF8 := tmp;
+    end
+  else
+    ConvertToUTF8 := s;
 end;
 
 end.
