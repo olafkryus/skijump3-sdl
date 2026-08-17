@@ -385,12 +385,7 @@ begin
  {$I-}
  reset(f,1);
  {$I+}
- if (IOResult<>0) then
-  begin
-   AsetaMoodi($3);
-   writeln('SJ3 Error: Can''t find file ',name,'.  Exiting... ');
-   Halt;
-  end;
+ Fileok(IOResult,name);
 
 { GetMem(DiskBuffer,BufSize); }
  GetMem(DiskBuffer,65528);
