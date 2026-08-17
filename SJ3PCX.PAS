@@ -25,7 +25,7 @@ function LataaPCX(name:string;picsize:longint;Page:word;mirror:byte):boolean;
 
 implementation
 
-uses Maki, SJ3HELP, SDLPort;
+uses Maki, SJ3File, SDLPort;
 
 const BufSize=2048;
       ReplaceMenu : array[0..6*2*3] of byte =
@@ -381,11 +381,7 @@ end;
 begin
 
  LataaPCX:=True;
- assign(f,name);
- {$I-}
- reset(f,1);
- {$I+}
- Fileok(IOResult,name);
+ SJ3File.OpenFile(f, name, SJ3File.FILEMODE_READ, false);
 
 { GetMem(DiskBuffer,BufSize); }
  GetMem(DiskBuffer,65528);
