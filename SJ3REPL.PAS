@@ -506,18 +506,14 @@ begin
 
 if (start) then
  begin
-  assign(f1,'INTRO.SJR');
-  {$I-}
-  reset(f1);
-
   result:=0;
 
   intro:=true;
 
-  if (IOResult<>0) then result:=1
-                   else readreplayinfo;
+  if (SJ3HELP.OpenTextFile(f1, 'INTRO.SJR', SJ3HELP.FILEMODE_READ, true))
+    then readreplayinfo
+    else result:=1;
 
-  {$I+}
   if (result=0) then
    begin
     LoadInfo(nytmaki,Acthill);
@@ -550,16 +546,11 @@ if (start) then
 
         result:=0; intro:=false;
 
-        assign(f1,filenames[index]+'.SJR');
-        {$I-}
-        reset(f1);
-
         if (upstr(filenames[index])='INTRO') then intro:=true;
 
-        if (IOResult<>0) then result:=1
-                         else readreplayinfo;
-
-        {$I+}
+        if (SJ3HELP.OpenTextFile(f1, filenames[index]+'.SJR', SJ3HELP.FILEMODE_READ, true))
+          then readreplayinfo
+          else result:=1;
 
         if (nytmaki>NumWCHills) and (result=0) then
          begin

@@ -251,11 +251,7 @@ var f1 : text;
     xx,yy,temp : integer;
 begin
 
- assign(f1,filename);
- {$I-}
- reset(f1);
- {$I+}
- FileOk(IOResult,filename);
+ SJ3HELP.OpenTextFile(f1, filename, SJ3HELP.FILEMODE_READ, false);
 
 { writeln;
  writeln('File opened.'); }

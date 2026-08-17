@@ -95,8 +95,7 @@ begin
 
  l1:=0; l2:=0;
 
-  assign(f1,'HISCORE.SKI');
-  rewrite(f1);  { topten }
+  SJ3HELP.OpenTextFile(f1, 'HISCORE.SKI', SJ3HELP.FILEMODE_WRITE, false);  { topten }
 
   writeln(f1,'HISCORE.SKI - !!! DO NOT ATTEMPT TO EDIT THIS FILE !!!');
 
@@ -150,8 +149,7 @@ var f2 : text;
     temp : integer;
 begin
 
-  assign(f2,'CONFIG.SKI');
-  rewrite(f2);  { CONFIG }
+  SJ3HELP.OpenTextFile(f2, 'CONFIG.SKI', SJ3HELP.FILEMODE_WRITE, false);  { CONFIG }
 
     writeln(f2,integer(reg));
     writeln(f2,integer(comphrs));
@@ -296,11 +294,7 @@ begin
 
   str1:='HISCORE.SKI';
 
-  assign(f1,str1);
-  {$I-}
-  reset(f1);
-  {$I+}
-  Fileok(IOresult,str1);
+  SJ3HELP.OpenTextFile(f1, str1, SJ3HELP.FILEMODE_READ, false);
 
   readln(f1,str1);  { se varoitusrivi pois sielt„ }
 
@@ -380,11 +374,7 @@ var f2 : text;
 begin
 
   str1:='CONFIG.SKI';
-  assign(f2,str1);
-  {$I-}
-  reset(f2);
-  {$I+}
-  Fileok(IOResult,str1);
+  SJ3HELP.OpenTextFile(f2, str1, SJ3HELP.FILEMODE_READ, false);
 
   readln(f2,temp);
   readln(f2,temp);
@@ -553,11 +543,7 @@ begin
         3 : str1:=lstr(13+gdetail);
         4 : begin
              str1:=namenumber;
-              assign(f3,'NAMES'+namenumber+'.SKI');
-              {$I-}
-              reset(f3);
-              {$I+}
-              if (IOResult=0) then
+              if (SJ3HELP.OpenTextFile(f3, 'NAMES'+namenumber+'.SKI', SJ3HELP.FILEMODE_READ, true)) then
                begin
                 readln(f3,str2);
                 close(f3);
@@ -1035,13 +1021,9 @@ var t1, t2 : integer;
 
 begin
 
- Assign(f1,replayfilename+'.SJR');
- {$I-}
- Rewrite(f1);
- {$I+}
  Result:=0;
 
- if (IOResult=0) then
+ if (SJ3HELP.OpenTextFile(f1, replayfilename+'.SJR', SJ3HELP.FILEMODE_WRITE, true)) then
   begin
    check:=0;
    writeln(f1,RStartX); writeln(f1,RStartY); inc(check,RStartx*2+RStarty);

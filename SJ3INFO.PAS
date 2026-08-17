@@ -107,11 +107,6 @@ var temp,temp2,nytmaki : integer;
 
 begin
 
- assign(f2,Setfile+'.SJC');
- {$I-}
- reset(f2);
- {$I+}
-
 { defaulthi(Hi); }
 
  code:=0;
@@ -119,7 +114,7 @@ begin
 
  for temp:=1 to 20 do defaulthi(top[temp+41]);
 
- if (IOResult=0) then
+ if (SJ3HELP.OpenTextFile(f2, Setfile+'.SJC', SJ3HELP.FILEMODE_READ, true)) then
   begin
    sortby:=0;
    {$I-}      { ei niin v„li„ vaikkei l”ytyisik„„n }
@@ -240,15 +235,10 @@ var temp,result : integer;
 
 begin
 
- assign(f2,Setfile+'.SJC');
- {$I-}
- rewrite(f2);
- {$I+}
-
  checksum:=0;
  result:=1;
 
- if (IOResult=0) then
+ if (SJ3HELP.OpenTextFile(f2, Setfile+'.SJC', SJ3HELP.FILEMODE_WRITE, true)) then
   begin
 
    code:=0; { SJC:n m„kij„rkk„koodi }
@@ -485,13 +475,9 @@ var hill, y : integer;
       f1 : text;
   begin
 
-   assign(f1,filename);
-   {$I-}
-   reset(f1);
-   {$I+}
    result:=1;
 
-   if (IOResult=0) then
+   if (SJ3HELP.OpenTextFile(f1, filename, SJ3HELP.FILEMODE_READ, true)) then
     begin
      readln(f1,Cuphills);
 
@@ -668,13 +654,9 @@ var hill, y : integer;
 
  begin
   result:=1;
-  assign(f1,filename+'.SJC');
-  {$I-}
-  rewrite(f1);
-  {$I+}
   code:=0;
 
-  if (IOResult=0) then
+  if (SJ3HELP.OpenTextFile(f1, filename+'.SJC', SJ3HELP.FILEMODE_WRITE, true)) then
    begin
     writeln(f1,CupHills);
     inc(code,svaluestr(filename,11)*13+1);
@@ -933,11 +915,7 @@ begin
 
  s:='NAMES'+whatset+'.SKI';
 
- assign(f4,s);
- {$I-}
- reset(f4);
- {$I+}
- FileOK(IOResult,s);
+ SJ3HELP.OpenTextFile(f4, s, SJ3HELP.FILEMODE_READ, false);
 
  readln(f4,s); { titlerivi pois }
 
@@ -1222,11 +1200,7 @@ begin
 
  str1:='PLAYERS.SKI';
 
- assign(f1,str1);
- {$I-}
- reset(f1);
- {$I+}
- FileOK(IOResult,str1);
+ SJ3HELP.OpenTextFile(f1, str1, SJ3HELP.FILEMODE_READ, false);
 
  for temp:=0 to 20 do DefaultProfile(temp,0);
 
@@ -1288,8 +1262,7 @@ begin
 
  str1:='PLAYERS.SKI';
 
- assign(f1,str1);
- rewrite(f1);
+ SJ3HELP.OpenTextFile(f1, str1, SJ3HELP.FILEMODE_WRITE, false);
 
  writeln(f1,NumProfiles);
   if (NumProfiles=0) or (NumProfiles>20) then NumProfiles:=1;
@@ -2072,8 +2045,7 @@ var f2 : text;
 
  procedure dotop(fname:string);
   begin
-   assign(f2,fname);
-   rewrite(f2);
+   SJ3HELP.OpenTextFile(f2, fname, SJ3HELP.FILEMODE_WRITE, false);
 
    writeln(f2,'SJ3 v',version,' - ',fname,' - created at ',dayandtime(Today,Now));
    writeln(f2);
