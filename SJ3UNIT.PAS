@@ -220,7 +220,7 @@ procedure clrscr;
 
 implementation
 
-uses crt, dos, sj3help, sj3graph, sj3lang, maki, lumi, sj3pcx, sdlport, SysUtils;
+uses crt, dos, sj3help, sj3graph, sj3lang, maki, lumi, sj3pcx, sdlport;
 
 {var osote : array [0..4000] of byte; }
 
@@ -2121,35 +2121,12 @@ end;
 
 
 procedure CheckExtraHills;
-var DirInfo : TSearchRec;
-    f1 : text;
+var f1 : text;
     temp : integer;
     filenames : array[0..MaxExtraHills] of FileStr;
 
 begin
- NumExtraHills:=0;
-
- for temp:=0 to MaxExtraHills do filenames[temp]:='';
-
- if FindFirst ('*.SJH',faAnyFile,DirInfo)=0 then
- begin
-   repeat
-     if (NumExtraHills < MaxExtraHills) then
-     begin
-       temp:=1;
-
-       inc(NumExtraHills);
-
-       while (DirInfo.Name[temp]<>'.') do
-       begin
-         filenames[NumExtraHills]:=filenames[NumExtraHills]+DirInfo.Name[temp];
-         inc(temp);
-       end;
-     end;
-   Until FindNext(DirInfo)<>0;
-
-   FindClose(DirInfo);
- end;
+ NumExtraHills:=SJ3HELP.FindFiles('*.SJH',filenames,false);
 
  Assign(f1,'MOREHILL.SKI');
  ReWrite(f1);

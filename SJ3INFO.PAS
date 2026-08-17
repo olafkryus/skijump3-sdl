@@ -4,7 +4,7 @@ unit sj3info; { pelaaja & profiili-infoa }
 
 interface { -------------------------------------------------------------- }
 
-uses maki, sj3unit, sj3help, sj3graph, sj3lang, sj3pcx, sdlport, SysUtils;
+uses maki, sj3unit, sj3help, sj3graph, sj3lang, sj3pcx, sdlport;
 
 procedure Init;
 
@@ -368,38 +368,8 @@ end;
 
 procedure FindCustoms(var NumCustoms:integer;
                       var Filenames:array of FileStr);
-var DirInfo : TSearchRec;
-    temp : integer;
 begin
-
- NumCustoms:=0;
- for temp:=0 to Maxcustoms do FileNames[temp]:='';
-
- if FindFirst ('*.SJC',faAnyFile,DirInfo)=0 then
- begin
-   repeat
-     if (NumCustoms < maxcustoms) then
-     begin
-       temp:=1;
-
-       inc(NumCustoms);
-
-       while (DirInfo.Name[temp]<>'.') do
-       begin
-         filenames[NumCustoms]:=filenames[NumCustoms]+DirInfo.Name[temp];
-         inc(temp);
-       end;
-
-       if (filenames[NumCustoms] = 'TEMP') then
-       begin
-         filenames[NumCustoms]:='';
-         dec(NumCustoms);
-       end;
-    end;
-   Until FindNext(DirInfo)<>0;
-
-   FindClose(DirInfo);
- end;
+ NumCustoms:=SJ3HELP.FindFiles('*.SJC',Filenames,true);
 end;
 
 

@@ -2,6 +2,8 @@ Unit SJ3HELP; { SJ3:n apufunktioita, ei graafisia }
 
 interface
 
+uses SJ3UNIT;
+
 var ch, ch2 : char; { n„ppisglobaalit }
 
 procedure beep(beeptapa:byte);
@@ -19,6 +21,7 @@ procedure cwriteln(col:byte;str1:string);
 procedure dowindow(x1,y1,x2,y2,col:integer);
 
 procedure Fileok(IORes:integer;filename:string);
+function FindFiles(pattern: string; var FileNames: array of SJ3UNIT.FileStr; excludeTemp: boolean): integer;
 
 function pcomp(score,sij:longint):longint;
 
@@ -36,7 +39,7 @@ function toansi(str1:string):string;
 
 implementation
 
-uses maki, sj3unit, crt, dos, sj3graph, SDLPort;
+uses maki, crt, dos, sj3graph, SDLPort, SysUtils;
 
 procedure Wait(C : integer) ;
 begin
@@ -308,6 +311,43 @@ begin
    Halt;
   end;
 
+end;
+
+
+function FindFiles(pattern: string; var FileNames: array of SJ3UNIT.FileStr; excludeTemp: boolean): integer;
+var DirInfo: SysUtils.TSearchRec;
+    temp, count, maxCount: integer;
+begin
+ count:=0;
+ maxCount:=length(FileNames)-1;
+ for temp:=0 to maxCount do FileNames[temp]:='';
+
+ if SysUtils.FindFirst(pattern,SysUtils.faAnyFile,DirInfo)=0 then
+ begin
+   repeat
+     if (count < maxCount) then
+     begin
+       inc(count);
+
+       temp:=1;
+       while (DirInfo.Name[temp]<>'.') do
+       begin
+         FileNames[count]:=FileNames[count]+DirInfo.Name[temp];
+         inc(temp);
+       end;
+
+       if ((excludeTemp) and (FileNames[count] = 'TEMP')) then
+       begin
+         FileNames[count]:='';
+         dec(count);
+       end;
+     end;
+   Until SysUtils.FindNext(DirInfo)<>0;
+
+   SysUtils.FindClose(DirInfo);
+ end;
+
+ FindFiles:=count;
 end;
 
 
