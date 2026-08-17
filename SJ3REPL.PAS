@@ -6,7 +6,7 @@ procedure replays(start:boolean;version:string;gdetail:byte);
 
 implementation
 
-uses SJ3Unit, SJ3info, SJ3Help, SJ3PCX, SJ3Graph, Tuuli, Maki, Lumi, SJ3lang, sdlport, SysUtils;
+uses SJ3Unit, SJ3info, SJ3Help, SJ3PCX, SJ3Graph, Tuuli, Maki, Lumi, SJ3lang, sdlport;
 
 
 procedure replays;
@@ -374,33 +374,8 @@ end;
 
 
  procedure findreplays;
- var DirInfo : TSearchRec;
-     temp : integer;
  begin
-
-  NumReplays:=0;
-
-  for temp:=0 to MaxReplays do filenames[temp]:='';
-
-  if FindFirst ('*.SJR',faAnyFile,DirInfo)=0 then
-  begin
-    repeat
-      if (NumReplays < MaxReplays) then
-      begin
-        temp:=1;
-
-        inc(NumReplays);
-
-        while (DirInfo.Name[temp]<>'.') do
-        begin
-          filenames[NumReplays]:=filenames[NumReplays]+DirInfo.Name[temp];
-          inc(temp);
-        end;
-      end;
-    Until FindNext(DirInfo)<>0;
-
-    FindClose(DirInfo);
-  end;
+  NumReplays:=SJ3HELP.FindFiles('*.SJR',filenames,false);
  end;
 
  procedure readreplayinfo;
