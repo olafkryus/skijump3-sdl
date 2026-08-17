@@ -25,7 +25,7 @@ function LataaPCX(name:string;picsize:longint;Page:word;mirror:byte):boolean;
 
 implementation
 
-uses Maki, SDLPort;
+uses Maki, SJ3HELP, SDLPort;
 
 const BufSize=2048;
       ReplaceMenu : array[0..6*2*3] of byte =
@@ -385,12 +385,7 @@ begin
  {$I-}
  reset(f,1);
  {$I+}
- if (IOResult<>0) then
-  begin
-   AsetaMoodi($3);
-   writeln('SJ3 Error: Can''t find file ',name,'.  Exiting... ');
-   Halt;
-  end;
+ Fileok(IOResult,name);
 
 { GetMem(DiskBuffer,BufSize); }
  GetMem(DiskBuffer,65528);
