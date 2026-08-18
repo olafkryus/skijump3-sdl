@@ -32,6 +32,8 @@ var filenames : array[0..MaxReplays] of FileStr;
     RD : array[0..4,0..1000] of byte;
     mcliivi : boolean;
 
+    ReplayFileID : SJ3HELP.TFileID;
+
 {    TempVideo : EPtr; }
 
 
@@ -485,7 +487,9 @@ if (start) then
 
   intro:=true;
 
-  if (SJ3HELP.OpenTextFile(f1, 'INTRO.SJR', SJ3HELP.FILEMODE_READ, true))
+  ReplayFileID.fileType:=SJ3HELP.FILETYPE_REPLAY;
+  ReplayFileID.fileName:='INTRO';
+  if (SJ3HELP.OpenTextResource(f1, ReplayFileID, SJ3HELP.FILEMODE_READ, true))
     then readreplayinfo
     else result:=1;
 
@@ -523,7 +527,9 @@ if (start) then
 
         if (upstr(filenames[index])='INTRO') then intro:=true;
 
-        if (SJ3HELP.OpenTextFile(f1, filenames[index]+'.SJR', SJ3HELP.FILEMODE_READ, true))
+        ReplayFileID.fileType:=SJ3HELP.FILETYPE_REPLAY;
+        ReplayFileID.fileName:=filenames[index];
+        if (SJ3HELP.OpenTextResource(f1, ReplayFileID, SJ3HELP.FILEMODE_READ, true))
           then readreplayinfo
           else result:=1;
 

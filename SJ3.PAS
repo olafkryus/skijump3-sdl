@@ -1020,12 +1020,15 @@ function writereplay(author,name:string):byte;
 var t1, t2 : integer;
     check : longint;
     result: byte;
+    ReplayFileID : SJ3HELP.TFileID;
 
 begin
 
  Result:=0;
 
- if (SJ3HELP.OpenTextFile(f1, replayfilename+'.SJR', SJ3HELP.FILEMODE_WRITE, true)) then
+ ReplayFileID.fileType:=SJ3HELP.FILETYPE_REPLAY;
+ ReplayFileID.fileName:=replayfilename;
+ if (SJ3HELP.OpenTextResource(f1, ReplayFileID, SJ3HELP.FILEMODE_WRITE, true)) then
   begin
    check:=0;
    writeln(f1,RStartX); writeln(f1,RStartY); inc(check,RStartx*2+RStarty);
