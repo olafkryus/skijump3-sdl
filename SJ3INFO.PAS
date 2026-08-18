@@ -2020,6 +2020,10 @@ end;
 procedure CallSendme(version,regname,regnumber:string;
                      Today:date;Now:Time;vcode:byte);
 
+const SendmeFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_SENDME; sendmeId: SJ3HELP.FILESENDME_SENDME );
+      CustomsFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_SENDME; sendmeId: SJ3HELP.FILESENDME_CUSTOMS );
+      ExtrasFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_SENDME; sendmeId: SJ3HELP.FILESENDME_EXTRAS );
+
 var f2 : text;
     str1, realname : string;
     sortby : byte;
@@ -2035,8 +2039,6 @@ var f2 : text;
 
  procedure dotop(fname:string);
   begin
-   SJ3HELP.OpenTextFile(f2, fname, SJ3HELP.FILEMODE_WRITE, false);
-
    writeln(f2,'SJ3 v',version,' - ',fname,' - created at ',dayandtime(Today,Now));
    writeln(f2);
    writeln(f2,'            (please fill in the real full names below!)');
@@ -2149,6 +2151,7 @@ var f2 : text;
 
 begin
 
+ SJ3HELP.OpenTextResource(f2, SendmeFileID, SJ3HELP.FILEMODE_WRITE, false);
  dotop('SENDME.TXT');
  findnames(1);
 
@@ -2293,6 +2296,7 @@ begin
  if (NumExtraHills>0) then  {      --- EXTRAS! ---      }
   begin
 
+   SJ3HELP.OpenTextResource(f2, ExtrasFileID, SJ3HELP.FILEMODE_WRITE, false);
    dotop('EXTRAS.TXT');
    findnames(2);
 
@@ -2341,6 +2345,7 @@ begin
  if (NumCustoms>0) then  {      --- CUSTOMS! ---      }
   begin
 
+   SJ3HELP.OpenTextResource(f2, CustomsFileID, SJ3HELP.FILEMODE_WRITE, false);
    dotop('CUSTOMS.TXT');
    findnames(3);
 
