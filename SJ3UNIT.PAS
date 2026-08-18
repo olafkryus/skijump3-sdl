@@ -45,6 +45,7 @@ type Stat_type = record
     FileStr = string[8];
 
     ImageIndexStr = string[3];
+    NameNumberStr = char;
 
 
 
