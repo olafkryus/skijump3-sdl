@@ -8,6 +8,8 @@ const
 
  {$I REGFREE.PAS}
 
+ RecordsFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_RECORDS );
+
 var
 
  version, version_full : string[10];
@@ -95,7 +97,7 @@ begin
 
  l1:=0; l2:=0;
 
-  SJ3HELP.OpenTextFile(f1, 'HISCORE.SKI', SJ3HELP.FILEMODE_WRITE, false);  { topten }
+  SJ3HELP.OpenTextResource(f1, RecordsFileID, SJ3HELP.FILEMODE_WRITE, false);  { topten }
 
   writeln(f1,'HISCORE.SKI - !!! DO NOT ATTEMPT TO EDIT THIS FILE !!!');
 
@@ -292,9 +294,7 @@ begin
 
   l1:=0; l2:=0; l3:=0; l4:=0; l5:=0;
 
-  str1:='HISCORE.SKI';
-
-  SJ3HELP.OpenTextFile(f1, str1, SJ3HELP.FILEMODE_READ, false);
+  SJ3HELP.OpenTextResource(f1, RecordsFileID, SJ3HELP.FILEMODE_READ, false);
 
   readln(f1,str1);  { se varoitusrivi pois sielt„ }
 
