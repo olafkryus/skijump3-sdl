@@ -44,6 +44,8 @@ type Stat_type = record
     NameStr = string[30];
     FileStr = string[8];
 
+    ImageIndexStr = string[3];
+
 
 
 {
@@ -64,7 +66,7 @@ type Stat_type = record
      Name : HillStr;
      Author : NameStr;
      Kr : integer;
-     FrIndex, BkIndex : string[3];
+     FrIndex, BkIndex : ImageIndexStr;
      BkBright, BkMirror, VxFinal : byte;
      Pk, PlSave : single;
      Profile : longint;
@@ -1399,7 +1401,7 @@ var f1 : text;
  procedure checkfile(phase:integer);
  var filename : string;
      str2 : string;
-     indexstr : string[3];
+     indexstr : ImageIndexStr;
 
  begin
 
