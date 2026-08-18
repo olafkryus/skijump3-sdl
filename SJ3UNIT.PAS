@@ -667,14 +667,16 @@ end;
 
 
 function LoadHill(var KeulaX:integer;nytmaki:integer;Acthill:hill_type):byte;
+const LoadImageID : TFileImageID = ( imageType: SJ3HELP.FILEIMAGE_LOAD );
 var temp : integer;
     l  : longint;
     str1 : string;
     res : byte;
+    imageId : TFileImageID;
 begin
           res:=0;
 
-          LataaPCX('LOAD.PCX',320*200,0,0);
+          LataaPCX(LoadImageID,320*200,0,0);
           SiirraStandardiPaletti;
           AsetaPaletti;
 
@@ -701,7 +703,9 @@ begin
 
           DrawScreen;
 
-          LataaPCX('FRONT'+Acthill.frindex+'.PCX',1024*512,0,0);
+          imageId.imageType:=SJ3HELP.FILEIMAGE_FRONT;
+          imageId.imageIndex:=Acthill.frindex;
+          LataaPCX(imageId,1024*512,0,0);
 
           TallennaAlkuosa(1);
 
@@ -714,7 +718,9 @@ begin
 
            dec(l,1500000);
 
-          LataaPCX('BACK'+acthill.bkindex+'.PCX',1024*400,Maki.Sivuja,acthill.bkmirror);
+          imageId.imageType:=SJ3HELP.FILEIMAGE_BACK;
+          imageId.imageIndex:=acthill.bkindex;
+          LataaPCX(imageId,1024*400,Maki.Sivuja,acthill.bkmirror);
 
           TakaisinAlkuosa(1);
 
@@ -1180,6 +1186,7 @@ procedure writehill(var f1:text;h:hill_type;index,phase:integer);
 var a,c : integer;
     b : byte;
     l1, l2 : longint;
+    imageId : TFileImageID;
 
 begin
 
@@ -1233,7 +1240,9 @@ begin
     h.hrlen:=0;
     h.hrtime:='Jan 1 2001 1:00';  { nollataan hillrec }
 
-    LataaPCX('FRONT'+h.frindex+'.PCX',1024*512,0,0);
+    imageId.imageType:=SJ3HELP.FILEIMAGE_FRONT;
+    imageId.imageIndex:=h.frindex;
+    LataaPCX(imageId,1024*512,0,0);
     LaskeLinjat(a,h.kr,h.pk);
 
     for a:=0 to 1023 do

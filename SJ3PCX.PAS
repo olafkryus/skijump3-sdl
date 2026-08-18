@@ -2,6 +2,8 @@ Unit SJ3PCX;
 
 interface
 
+uses SJ3HELP;
+
 procedure AsetaPaletti;
 procedure SiirraStandardiPaletti;
 procedure SiirraLiiviPois;
@@ -21,11 +23,11 @@ const NumSkis = 4;
       NumSuits = 8;
 
 
-function LataaPCX(name:string;picsize:longint;Page:word;mirror:byte):boolean;
+function LataaPCX(imageId:SJ3HELP.TFileImageID;picsize:longint;Page:word;mirror:byte):boolean;
 
 implementation
 
-uses Maki, SJ3HELP, SDLPort;
+uses Maki, SDLPort;
 
 const BufSize=2048;
       ReplaceMenu : array[0..6*2*3] of byte =
@@ -322,7 +324,7 @@ begin
 end;
 
 
-function LataaPCX(name:string;picsize:longint;Page:word;mirror:byte):boolean;
+function LataaPCX(imageId:SJ3HELP.TFileImageID;picsize:longint;Page:word;mirror:byte):boolean;
 
 var   DiskBuffer:Pointer;
       dbp: pbyte;
@@ -332,6 +334,7 @@ var   DiskBuffer:Pointer;
       wp:longint;
       i : integer;
       b1,b2:byte;
+      fileID:SJ3HELP.TFileID;
 
 function PtrConversion(p:pointer):pbyte;
 begin
@@ -381,7 +384,9 @@ end;
 begin
 
  LataaPCX:=True;
- SJ3HELP.OpenFile(f, name, SJ3HELP.FILEMODE_READ, false);
+ fileID.fileType:=SJ3HELP.FILETYPE_IMAGE;
+ fileID.imageId:=imageId;
+ SJ3HELP.OpenResource(f, fileID, SJ3HELP.FILEMODE_READ, false);
 
 { GetMem(DiskBuffer,BufSize); }
  GetMem(DiskBuffer,65528);

@@ -2385,13 +2385,14 @@ begin
 end;
 
 procedure drawmainmenu;
+const MainImageID : TFileImageID = ( imageType: SJ3HELP.FILEIMAGE_MAIN );
 var x, y, temp : integer;
 begin
 
 {  fontcolor(240); }
 
     fillbox(0,0,319,199,0); drawscreen;
-    LataaPCX('MAIN.PCX',320*200,0,0);
+    LataaPCX(MainImageID,320*200,0,0);
 
     SiirraStandardiPaletti;
     SpecialMainPaletti;
