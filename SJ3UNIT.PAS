@@ -227,6 +227,7 @@ uses crt, dos, sj3help, sj3graph, sj3lang, maki, lumi, sj3pcx, sdlport;
 
 const GoalsFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_GOALS );
       MorehillFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_MOREHILL );
+      HillbaseFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_RESOURCE; resourceId: SJ3HELP.FILERESOURCE_HILLBASE );
 
 {var osote : array [0..4000] of byte; }
 
@@ -1410,6 +1411,7 @@ var f1 : text;
     str1 : string;
     l1,l2,l3,l4 : longint;
     temp : integer;
+    HillFileID : SJ3HELP.TFileID;
 
  procedure checkfile(phase:integer);
  var filename : string;
@@ -1449,10 +1451,19 @@ begin
 
  defaulthill(hill);
 
- if (nytmaki<=NumWCHills) then str1:='HILLBASE.SKI'
-                          else str1:=hillfile(nytmaki-NumWCHills)+'.SJH';
+ if (nytmaki<=NumWCHills) then
+  begin
+   str1:='HILLBASE.SKI';
+   HillFileID:=HillbaseFileID;
+  end
+ else
+  begin
+   str1:=hillfile(nytmaki-NumWCHills)+'.SJH';
+   HillFileID.fileType:=SJ3HELP.FILETYPE_EXTRAHILL;
+   HillFileID.fileName:=hillfile(nytmaki-NumWCHills);
+  end;
 
-  SJ3HELP.OpenTextFile(f1, str1, SJ3HELP.FILEMODE_READ, false);
+  SJ3HELP.OpenTextResource(f1, HillFileID, SJ3HELP.FILEMODE_READ, false);
 
   temp:=nytmaki;
 
@@ -2023,6 +2034,7 @@ procedure WriteExtraHillHR(index:integer);
 var f1 : text;
     h : hill_type;
     temp : integer;
+    HillFileID : SJ3HELP.TFileID;
 begin
 
  LoadInfo(index,h);
@@ -2033,7 +2045,9 @@ begin
 
  temp:=index-NumWCHills;
 
- if (SJ3HELP.OpenTextFile(f1, hillfile(temp)+'.SJH', SJ3HELP.FILEMODE_WRITE, true)) then
+ HillFileID.fileType:=SJ3HELP.FILETYPE_EXTRAHILL;
+ HillFileID.fileName:=hillfile(temp);
+ if (SJ3HELP.OpenTextResource(f1, HillFileID, SJ3HELP.FILEMODE_WRITE, true)) then
   begin
    writehill(f1,h,0,1); { ainoa mesta jossa phase=1 }
    close(f1);
@@ -2090,7 +2104,7 @@ begin
 
  until (leave);
 
- SJ3HELP.OpenTextFile(f1, 'HILLBASE.SKI', SJ3HELP.FILEMODE_WRITE, false);
+ SJ3HELP.OpenTextResource(f1, HillbaseFileID, SJ3HELP.FILEMODE_WRITE, false);
 
  writeln(f1,'-HILLBASE.SKI- DO NOT ATTEMPT TO EDIT THIS FILE!');
 
@@ -2314,6 +2328,7 @@ var h : hill_type;
     f1 : text;
 {    tempch : char; }
     cols : array [1..3] of integer;
+    HillFileID : SJ3HELP.TFileID;
 
 begin
 
@@ -2446,7 +2461,9 @@ begin
 
        if (filestr<>'NULL') then { sitten kirjoitetaan p„„lle }
         begin
-         if (SJ3HELP.OpenTextFile(f1, filestr+'.SJH', SJ3HELP.FILEMODE_WRITE, true)) then
+         HillFileID.fileType:=SJ3HELP.FILETYPE_EXTRAHILL;
+         HillFileID.fileName:=filestr;
+         if (SJ3HELP.OpenTextResource(f1, HillFileID, SJ3HELP.FILEMODE_WRITE, true)) then
           begin
            writehill(f1,h,0,0); { file aukesi ok }
            close(f1);
