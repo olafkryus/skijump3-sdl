@@ -490,6 +490,7 @@ var index : array[0..4] of integer;
     ok, out : boolean;
     temp : integer;
     screen, entries, length : byte;
+    NamesFileID : SJ3HELP.TFileID;
 begin
 
  for temp:=0 to 4 do index[temp]:=1;
@@ -544,7 +545,9 @@ begin
         3 : str1:=lstr(13+gdetail);
         4 : begin
              str1:=namenumber;
-              if (SJ3HELP.OpenTextFile(f3, 'NAMES'+namenumber+'.SKI', SJ3HELP.FILEMODE_READ, true)) then
+              NamesFileID.fileType:=SJ3HELP.FILETYPE_NAMES;
+              NamesFileID.nameNumber:=namenumber;
+              if (SJ3HELP.OpenTextResource(f3, NamesFileID, SJ3HELP.FILEMODE_READ, true)) then
                begin
                 readln(f3,str2);
                 close(f3);

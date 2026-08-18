@@ -878,15 +878,16 @@ var f4 : text;
     temp,c, temp2, temp3 : integer;
     ok : boolean;
     tempb : byte;
+    NamesFileID : SJ3HELP.TFileID;
 
 begin
 
  l1:=0;  { checksum-laskuri }
  l2:=0;
 
- s:='NAMES'+whatset+'.SKI';
-
- SJ3HELP.OpenTextFile(f4, s, SJ3HELP.FILEMODE_READ, false);
+ NamesFileID.fileType:=SJ3HELP.FILETYPE_NAMES;
+ NamesFileID.nameNumber:=whatset;
+ SJ3HELP.OpenTextResource(f4, NamesFileID, SJ3HELP.FILEMODE_READ, false);
 
  readln(f4,s); { titlerivi pois }
 
