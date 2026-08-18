@@ -9,6 +9,7 @@ const
  {$I REGFREE.PAS}
 
  RecordsFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_RECORDS );
+ ConfigFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_CONFIG );
 
 var
 
@@ -151,7 +152,7 @@ var f2 : text;
     temp : integer;
 begin
 
-  SJ3HELP.OpenTextFile(f2, 'CONFIG.SKI', SJ3HELP.FILEMODE_WRITE, false);  { CONFIG }
+  SJ3HELP.OpenTextResource(f2, ConfigFileID, SJ3HELP.FILEMODE_WRITE, false);  { CONFIG }
 
     writeln(f2,integer(reg));
     writeln(f2,integer(comphrs));
@@ -373,8 +374,7 @@ var f2 : text;
     temp : integer;
 begin
 
-  str1:='CONFIG.SKI';
-  SJ3HELP.OpenTextFile(f2, str1, SJ3HELP.FILEMODE_READ, false);
+  SJ3HELP.OpenTextResource(f2, ConfigFileID, SJ3HELP.FILEMODE_READ, false);
 
   readln(f2,temp);
   readln(f2,temp);
