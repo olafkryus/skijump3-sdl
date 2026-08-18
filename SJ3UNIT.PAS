@@ -225,6 +225,8 @@ implementation
 
 uses crt, dos, sj3help, sj3graph, sj3lang, maki, lumi, sj3pcx, sdlport;
 
+const GoalsFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_GOALS );
+
 {var osote : array [0..4000] of byte; }
 
 var HD : array[0..NumWCHills+MaxExtraHills] of ^Hillinfo_type;
@@ -497,7 +499,7 @@ begin
 
  if (num>0) and (num<=numwchills) then
   begin
-   if (SJ3HELP.OpenTextFile(f2, 'GOALS.SKI', SJ3HELP.FILEMODE_READ, true)) then
+   if (SJ3HELP.OpenTextResource(f2, GoalsFileID, SJ3HELP.FILEMODE_READ, true)) then
     begin
      for temp:=1 to num do
       readln(f2,value);
@@ -521,7 +523,7 @@ var goals : array[0..numwchills] of integer;
   var f2 : text;
       temp2 : integer;
   begin
-   if (SJ3HELP.OpenTextFile(f2, 'GOALS.SKI', SJ3HELP.FILEMODE_READ, true)) then
+   if (SJ3HELP.OpenTextResource(f2, GoalsFileID, SJ3HELP.FILEMODE_READ, true)) then
     begin
      for temp2:=1 to NumWCHills do
       readln(f2,goals[temp2]);
@@ -533,7 +535,7 @@ var goals : array[0..numwchills] of integer;
   var f2 : text;
       temp2 : integer;
   begin
-   if (SJ3HELP.OpenTextFile(f2, 'GOALS.SKI', SJ3HELP.FILEMODE_WRITE, true)) then
+   if (SJ3HELP.OpenTextResource(f2, GoalsFileID, SJ3HELP.FILEMODE_WRITE, true)) then
     begin
      for temp2:=1 to NumWCHills do
       writeln(f2,goals[temp2]);
