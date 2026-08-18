@@ -18,6 +18,7 @@ Implementation
 uses {crt,}sj3help;
 
 const NumStr = 599;
+      LanguagesFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_RESOURCE; resourceId: SJ3HELP.FILERESOURCE_LANGUAGES );
 
 type LangStr = string[59];
 
@@ -67,7 +68,7 @@ var f1 : text;
     out : boolean;
 begin
 
- SJ3HELP.OpenTextFile(f1, 'LANGBASE.SKI', SJ3HELP.FILEMODE_READ, false);
+ SJ3HELP.OpenTextResource(f1, LanguagesFileID, SJ3HELP.FILEMODE_READ, false);
 
  numlanguages:=0;
 
@@ -100,7 +101,7 @@ begin
 
  for temp:=0 to NumStr do plstr[temp]^:='?';
 
- SJ3HELP.OpenTextFile(f1, 'LANGBASE.SKI', SJ3HELP.FILEMODE_READ, false);
+ SJ3HELP.OpenTextResource(f1, LanguagesFileID, SJ3HELP.FILEMODE_READ, false);
 
  out:=false;
  index:=0;
