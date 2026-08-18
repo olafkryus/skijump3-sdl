@@ -105,6 +105,7 @@ var temp,temp2,nytmaki : integer;
     str1:string;
     f2 : text;
     code, checksum, compare, compare2 : longint;
+    CustomsetFileID : SJ3HELP.TFileID;
 
 begin
 
@@ -115,7 +116,9 @@ begin
 
  for temp:=1 to 20 do defaulthi(top[temp+41]);
 
- if (SJ3HELP.OpenTextFile(f2, Setfile+'.SJC', SJ3HELP.FILEMODE_READ, true)) then
+ CustomsetFileID.fileType:=SJ3HELP.FILETYPE_CUSTOMSET;
+ CustomsetFileID.fileName:=Setfile;
+ if (SJ3HELP.OpenTextResource(f2, CustomsetFileID, SJ3HELP.FILEMODE_READ, true)) then
   begin
    sortby:=0;
    {$I-}      { ei niin v„li„ vaikkei l”ytyisik„„n }
@@ -233,13 +236,16 @@ function writecustom(SetFile:string;sortby:byte;
 var temp,result : integer;
     checksum, code : longint;
     f2 : text;
+    CustomsetFileID : SJ3HELP.TFileID;
 
 begin
 
  checksum:=0;
  result:=1;
 
- if (SJ3HELP.OpenTextFile(f2, Setfile+'.SJC', SJ3HELP.FILEMODE_WRITE, true)) then
+ CustomsetFileID.fileType:=SJ3HELP.FILETYPE_CUSTOMSET;
+ CustomsetFileID.fileName:=Setfile;
+ if (SJ3HELP.OpenTextResource(f2, CustomsetFileID, SJ3HELP.FILEMODE_WRITE, true)) then
   begin
 
    code:=0; { SJC:n m„kij„rkk„koodi }
@@ -444,11 +450,14 @@ var hill, y : integer;
       str1 : string;
       ok : boolean;
       f1 : text;
+      CustomsetFileID : SJ3HELP.TFileID;
   begin
 
    result:=1;
 
-   if (SJ3HELP.OpenTextFile(f1, filename, SJ3HELP.FILEMODE_READ, true)) then
+   CustomsetFileID.fileType:=SJ3HELP.FILETYPE_CUSTOMSET;
+   CustomsetFileID.fileName:=filename;
+   if (SJ3HELP.OpenTextResource(f1, CustomsetFileID, SJ3HELP.FILEMODE_READ, true)) then
     begin
      readln(f1,Cuphills);
 
@@ -622,12 +631,15 @@ var hill, y : integer;
  var f1 : text;
      temp2,result : integer;
      code : longint;
+     CustomsetFileID : SJ3HELP.TFileID;
 
  begin
   result:=1;
   code:=0;
 
-  if (SJ3HELP.OpenTextFile(f1, filename+'.SJC', SJ3HELP.FILEMODE_WRITE, true)) then
+  CustomsetFileID.fileType:=SJ3HELP.FILETYPE_CUSTOMSET;
+  CustomsetFileID.fileName:=filename;
+  if (SJ3HELP.OpenTextResource(f1, CustomsetFileID, SJ3HELP.FILEMODE_WRITE, true)) then
    begin
     writeln(f1,CupHills);
     inc(code,svaluestr(filename,11)*13+1);
