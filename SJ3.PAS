@@ -5747,6 +5747,7 @@ end;
 
 
 procedure alku;
+const AnimFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_RESOURCE; resourceId: SJ3HELP.FILERESOURCE_ANIM );
 begin
 
  SDLPort.WritePortInfo;
@@ -5758,7 +5759,7 @@ begin
  WriteVersion;
 
  write('- Loading ANIM.SKI');
-  LoadAnim('ANIM.SKI');
+  LoadAnim(AnimFileID);
 
 (*
   for temp:=1 to MaxOwnPl do
