@@ -226,6 +226,7 @@ implementation
 uses crt, dos, sj3help, sj3graph, sj3lang, maki, lumi, sj3pcx, sdlport;
 
 const GoalsFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_GOALS );
+      MorehillFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_MOREHILL );
 
 {var osote : array [0..4000] of byte; }
 
@@ -1380,7 +1381,7 @@ begin
 
  if (nyt<=NumExtraHills) then
   begin
-   SJ3HELP.OpenTextFile(f2, 'MOREHILL.SKI', SJ3HELP.FILEMODE_READ, false);
+   SJ3HELP.OpenTextResource(f2, MorehillFileID, SJ3HELP.FILEMODE_READ, false);
 
    str1:='ERROR';
 
@@ -2118,7 +2119,7 @@ var f1 : text;
 begin
  NumExtraHills:=SJ3HELP.FindFiles('*.SJH',filenames,false);
 
- SJ3HELP.OpenTextFile(f1, 'MOREHILL.SKI', SJ3HELP.FILEMODE_WRITE, false);
+ SJ3HELP.OpenTextResource(f1, MorehillFileID, SJ3HELP.FILEMODE_WRITE, false);
 
  writeln(f1,NumExtraHills);
 
@@ -2136,13 +2137,10 @@ procedure LoadHillInfo;  { t„ll„ ladataan mnimet ja kri -taulut kuntoon }
 var f1 : text;
     temp : byte;
     NowHill : hill_type;
-    filename : string;
 
 begin
 
- filename:='MOREHILL.SKI';
-
- SJ3HELP.OpenTextFile(f1, filename, SJ3HELP.FILEMODE_READ, false);
+ SJ3HELP.OpenTextResource(f1, MorehillFileID, SJ3HELP.FILEMODE_READ, false);
 
  readln(f1,NumExtraHills);
 
