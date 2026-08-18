@@ -79,6 +79,7 @@ const maxcustomhills = 40;
 {$ELSE}
 const maxcustomhills = 5;
 {$ENDIF}
+      ProfilesFileID : SJ3HELP.TFileID = ( fileType: SJ3HELP.FILETYPE_CONFIG; configId: SJ3HELP.FILECONFIG_PROFILES );
 
 var maxprofiles, maxpmaara : integer;
 
@@ -1188,9 +1189,7 @@ begin
  maxpmaara:=2; maxprofiles:=4;
 {$ENDIF}
 
- str1:='PLAYERS.SKI';
-
- SJ3HELP.OpenTextFile(f1, str1, SJ3HELP.FILEMODE_READ, false);
+ SJ3HELP.OpenTextResource(f1, ProfilesFileID, SJ3HELP.FILEMODE_READ, false);
 
  for temp:=0 to 20 do DefaultProfile(temp,0);
 
@@ -1247,12 +1246,9 @@ end;
 procedure WriteProfiles;
 var f1 : text;
     temp : integer;
-    str1 : string;
 begin
 
- str1:='PLAYERS.SKI';
-
- SJ3HELP.OpenTextFile(f1, str1, SJ3HELP.FILEMODE_WRITE, false);
+ SJ3HELP.OpenTextResource(f1, ProfilesFileID, SJ3HELP.FILEMODE_WRITE, false);
 
  writeln(f1,NumProfiles);
   if (NumProfiles=0) or (NumProfiles>20) then NumProfiles:=1;
