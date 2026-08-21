@@ -1363,6 +1363,7 @@ end;
 
 
 
+// TODO: Fexist should ask by resource
 function fexist(filename:string):boolean;
 begin
 
@@ -2280,6 +2281,7 @@ begin
  if (question(lstr(194)+' '+filestr,lstr(193))) then
   begin
 
+   // TODO: Create dedicated file delete function
    if (SJ3HELP.OpenTextFile(f1, filestr, SJ3HELP.FILEMODE_READ, true)) then
     begin
      close(f1);
