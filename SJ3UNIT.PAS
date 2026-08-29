@@ -61,8 +61,8 @@ type Stat_type = record
     end;
 
     Hill_type = record
-     Name : string[25];
-     Author : string[30];
+     Name : HillStr;
+     Author : NameStr;
      Kr : integer;
      FrIndex, BkIndex : string[3];
      BkBright, BkMirror, VxFinal : byte;
@@ -133,7 +133,7 @@ function makeletter(temp:integer):char;
 
 procedure resultbox(phase:byte;result:integer);
 
-function hillfile(nyt:integer):string;
+function hillfile(nyt:integer):FileStr;
 
 { procedure WriteExtraHillHR(index:integer);}
 function fexist(filename:string):boolean;
@@ -867,7 +867,7 @@ begin  { phase: 0 - DEL ei k„y, 1 - DEL k„y, 2 - 2 columns! DEL k„y }
      if (phase=6) then index:=254;
     end;
 
-   if (ch=#9) and (tab>0) then
+   if (phase<>6) and (ch=#9) and (tab>0) then
     begin { tab }
      out:=true;
      if (tab<254) then index:=tab;
@@ -1346,35 +1346,21 @@ end;
 
 
 function fexist(filename:string):boolean;
-var tempb : boolean;
-    f1 : file;
 begin
 
- tempb:=false;
-
-  {$I-}
-  assign(f1,filename);
-  reset(f1);
-  {$I+}
-  if (IOResult = 0) then
-   begin
-    tempb:=true;
-    close(f1);
-   end;
-
-  fexist:=tempb;
+ fexist:=FileExists(filename);
 
 end;
 
 
 
-function hillfile(nyt:integer):string;
+function hillfile(nyt:integer):FileStr;
 var str1 : string;
     temp : integer;
     f2 : text;
 begin
 
- hillfile:='HILLBASE.SKI';
+ hillfile:='HILLBASE';
 
  if (nyt<=NumExtraHills) then
   begin
@@ -1384,7 +1370,7 @@ begin
    {$I+}
    FileOK(IOResult,'MOREHILL.SKI');
 
-   str1:='ERROR.SJH';
+   str1:='ERROR';
 
    readln(f2); { NumExtraHills pois }
 
@@ -2126,7 +2112,7 @@ procedure CheckExtraHills;
 var DirInfo : TSearchRec;
     f1 : text;
     temp : integer;
-    filenames : array[0..MaxExtraHills] of string[12];
+    filenames : array[0..MaxExtraHills] of FileStr;
 
 begin
  NumExtraHills:=0;
@@ -2493,8 +2479,8 @@ begin
 
        if (filestr<>'NULL') then { sitten kirjoitetaan p„„lle }
         begin
-         {$I-}
          assign(f1,filestr+'.SJH');
+         {$I-}
          rewrite(f1);
          {$I+}
          if (IOResult=0) then

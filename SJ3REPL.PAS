@@ -10,7 +10,8 @@ uses SJ3Unit, SJ3info, SJ3Help, SJ3PCX, SJ3Graph, Tuuli, Maki, Lumi, SJ3lang, sd
 
 
 procedure replays;
-var filenames : array[0..500] of string[12];
+const MaxReplays = 500;
+var filenames : array[0..MaxReplays] of FileStr;
     numreplays : integer;
     f1 : text;
     oldindex, temp, index : integer;
@@ -26,7 +27,7 @@ var filenames : array[0..500] of string[12];
     suitcolor, skicolor : byte;
     Author, Name : NameStr;
     When : TimeStr;
-    HillFilename : string[12];
+    HillFilename : FileStr;
     laskuri,mycheck : longint;
     RD : array[0..4,0..1000] of byte;
     mcliivi : boolean;
@@ -379,12 +380,12 @@ end;
 
   NumReplays:=0;
 
-  for temp:=0 to 100 do filenames[temp]:='';
+  for temp:=0 to MaxReplays do filenames[temp]:='';
 
   if FindFirst ('*.SJR',faAnyFile,DirInfo)=0 then
   begin
     repeat
-      if (NumReplays < 100) then
+      if (NumReplays < MaxReplays) then
       begin
         temp:=1;
 
