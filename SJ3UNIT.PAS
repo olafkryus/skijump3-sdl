@@ -490,19 +490,17 @@ var temp, value:integer;
     f2 : text;
 begin
 
- assign(f2,'GOALS.SKI');
- {$I-}
- reset(f2);
- {$I+}
-
  value:=0;
 
- if (IOResult=0) and (num>0) and (num<=numwchills) then
+ if (num>0) and (num<=numwchills) then
   begin
-   for temp:=1 to num do
-    readln(f2,value);
+   if (SJ3HELP.OpenTextFile(f2, 'GOALS.SKI', SJ3HELP.FILEMODE_READ, true)) then
+    begin
+     for temp:=1 to num do
+      readln(f2,value);
 
-   close(f2);
+     close(f2);
+    end;
   end;
 
  loadgoal:=value;
@@ -520,11 +518,7 @@ var goals : array[0..numwchills] of integer;
   var f2 : text;
       temp2 : integer;
   begin
-   assign(f2,'GOALS.SKI');
-   {$I-}
-   reset(f2);
-   {$I+}
-   if (IOResult=0) then
+   if (SJ3HELP.OpenTextFile(f2, 'GOALS.SKI', SJ3HELP.FILEMODE_READ, true)) then
     begin
      for temp2:=1 to NumWCHills do
       readln(f2,goals[temp2]);
@@ -536,11 +530,7 @@ var goals : array[0..numwchills] of integer;
   var f2 : text;
       temp2 : integer;
   begin
-   assign(f2,'GOALS.SKI');
-   {$I-}
-   rewrite(f2);
-   {$I+}
-   if (IOResult=0) then
+   if (SJ3HELP.OpenTextFile(f2, 'GOALS.SKI', SJ3HELP.FILEMODE_WRITE, true)) then
     begin
      for temp2:=1 to NumWCHills do
       writeln(f2,goals[temp2]);
@@ -1376,11 +1366,7 @@ begin
 
  if (nyt<=NumExtraHills) then
   begin
-   assign(f2,'MOREHILL.SKI');
-   {$I-}
-   reset(f2);
-   {$I+}
-   FileOK(IOResult,'MOREHILL.SKI');
+   SJ3HELP.OpenTextFile(f2, 'MOREHILL.SKI', SJ3HELP.FILEMODE_READ, false);
 
    str1:='ERROR';
 
@@ -1451,12 +1437,7 @@ begin
  if (nytmaki<=NumWCHills) then str1:='HILLBASE.SKI'
                           else str1:=hillfile(nytmaki-NumWCHills)+'.SJH';
 
-  assign(f1,str1);
-
-  {$I-}
-  reset(f1);
-  {$I+}
-  FileOk(IOResult, str1);
+  SJ3HELP.OpenTextFile(f1, str1, SJ3HELP.FILEMODE_READ, false);
 
   temp:=nytmaki;
 
@@ -2037,11 +2018,7 @@ begin
 
  temp:=index-NumWCHills;
 
- assign(f1,hillfile(temp)+'.SJH');
- {$I-}
- rewrite(f1);
- {$I+}
- if (IOResult=0) then
+ if (SJ3HELP.OpenTextFile(f1, hillfile(temp)+'.SJH', SJ3HELP.FILEMODE_WRITE, true)) then
   begin
    writehill(f1,h,0,1); { ainoa mesta jossa phase=1 }
    close(f1);
@@ -2098,8 +2075,7 @@ begin
 
  until (leave);
 
- assign(f1,'HILLBASE.SKI');
- rewrite(f1);
+ SJ3HELP.OpenTextFile(f1, 'HILLBASE.SKI', SJ3HELP.FILEMODE_WRITE, false);
 
  writeln(f1,'-HILLBASE.SKI- DO NOT ATTEMPT TO EDIT THIS FILE!');
 
@@ -2128,8 +2104,7 @@ var f1 : text;
 begin
  NumExtraHills:=SJ3HELP.FindFiles('*.SJH',filenames,false);
 
- Assign(f1,'MOREHILL.SKI');
- ReWrite(f1);
+ SJ3HELP.OpenTextFile(f1, 'MOREHILL.SKI', SJ3HELP.FILEMODE_WRITE, false);
 
  writeln(f1,NumExtraHills);
 
@@ -2153,12 +2128,7 @@ begin
 
  filename:='MOREHILL.SKI';
 
- assign(f1,filename);
-
- {$I-}
- reset(f1);
- {$I+}
- FileOk(IOResult, filename);
+ SJ3HELP.OpenTextFile(f1, filename, SJ3HELP.FILEMODE_READ, false);
 
  readln(f1,NumExtraHills);
 
@@ -2284,11 +2254,7 @@ begin
  if (question(lstr(194)+' '+filestr,lstr(193))) then
   begin
 
-   assign(f1,filestr);
-   {$I-}
-   reset(f1);
-   {$I+}
-   if (IOResult=0) then
+   if (SJ3HELP.OpenTextFile(f1, filestr, SJ3HELP.FILEMODE_READ, true)) then
     begin
      close(f1);
      erase(f1);
@@ -2468,11 +2434,7 @@ begin
 
        if (filestr<>'NULL') then { sitten kirjoitetaan p„„lle }
         begin
-         assign(f1,filestr+'.SJH');
-         {$I-}
-         rewrite(f1);
-         {$I+}
-         if (IOResult=0) then
+         if (SJ3HELP.OpenTextFile(f1, filestr+'.SJH', SJ3HELP.FILEMODE_WRITE, true)) then
           begin
            writehill(f1,h,0,0); { file aukesi ok }
            close(f1);
@@ -3002,14 +2964,14 @@ begin
  writeln('  This version is registered to Everyone. ');
  textcolor(15);
  cwriteln(8,'   Thanks for all the support!!!');
- 
+
 { write('  This version is registered to: ');
  textcolor(15);
  writeln(sh(regname,25),' #',regnumber);
  cwriteln(8,'   Thanks a million for registering.  I wish all users were like you.');
  writeln('   (But if you''re not ',sh(regname,32),', you should be ashamed.)');
  }
- 
+
 end;
 
 

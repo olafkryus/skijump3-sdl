@@ -4,6 +4,8 @@ interface
 
 uses SJ3UNIT;
 
+type TFileMode = (FILEMODE_READ, FILEMODE_WRITE);
+
 var ch, ch2 : char; { n„ppisglobaalit }
 
 procedure beep(beeptapa:byte);
@@ -20,7 +22,8 @@ procedure cwriteln(col:byte;str1:string);
 
 procedure dowindow(x1,y1,x2,y2,col:integer);
 
-procedure Fileok(IORes:integer;filename:string);
+function OpenFile(var f: file; filename: string; mode: TFileMode; optional: boolean): boolean;
+function OpenTextFile(var f: text; filename: string; mode: TFileMode; optional: boolean): boolean;
 function FindFiles(pattern: string; var FileNames: array of SJ3UNIT.FileStr; excludeTemp: boolean): integer;
 
 function pcomp(score,sij:longint):longint;
@@ -302,7 +305,6 @@ end;
 
 procedure Fileok(IORes:integer;filename:string);
 begin
-
  if (IORes<>0) then
   begin
    AsetaMoodi($3);
@@ -310,7 +312,26 @@ begin
    Readln;
    Halt;
   end;
+end;
 
+function OpenFile(var f: file; filename: string; mode: TFileMode; optional: boolean): boolean;
+begin
+ Assign(f,filename);
+ case mode of
+   FILEMODE_READ: begin {$I-} Reset(f,1); {$I+} if (not optional) then FileOK(IOResult,filename); end;
+   FILEMODE_WRITE: if (optional) then begin {$I-} Rewrite(f,1); {$I+} end else Rewrite(f,1);
+ end;
+ OpenFile:=IOResult=0;
+end;
+
+function OpenTextFile(var f: text; filename: string; mode: TFileMode; optional: boolean): boolean;
+begin
+ Assign(f,filename);
+ case mode of
+   FILEMODE_READ: begin {$I-} Reset(f); {$I+} if (not optional) then FileOK(IOResult,filename); end;
+   FILEMODE_WRITE: if (optional) then begin {$I-} Rewrite(f); {$I+} end else Rewrite(f);
+ end;
+ OpenTextFile:=IOResult=0;
 end;
 
 
