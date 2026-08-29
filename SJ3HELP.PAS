@@ -6,6 +6,38 @@ uses SJ3UNIT;
 
 type TFileMode = (FILEMODE_READ, FILEMODE_WRITE);
 
+     TFileType = (FILETYPE_RESOURCE, FILETYPE_IMAGE, FILETYPE_CONFIG, FILETYPE_NAMES, FILETYPE_REPLAY, FILETYPE_CUSTOMSET, FILETYPE_EXTRAHILL, FILETYPE_SENDME);
+     TFileResourceID = (FILERESOURCE_ANIM, FILERESOURCE_LANGUAGES, FILERESOURCE_HILLBASE);
+     TFileImageType = (FILEIMAGE_MAIN, FILEIMAGE_LOAD, FILEIMAGE_FRONT, FILEIMAGE_BACK);
+     TFileImageID = record
+       case imageType: TFileImageType of
+         FILEIMAGE_FRONT, FILEIMAGE_BACK: ( imageIndex: SJ3UNIT.ImageIndexStr; );
+     end;
+     TFileConfigID = (FILECONFIG_CONFIG, FILECONFIG_RECORDS, FILECONFIG_GOALS, FILECONFIG_PROFILES, FILECONFIG_MOREHILL);
+     TFileSendmeID = (FILESENDME_SENDME, FILESENDME_CUSTOMS, FILESENDME_EXTRAS);
+     TFileID = record
+       case fileType: TFileType of
+         FILETYPE_RESOURCE: (
+           resourceId: TFileResourceID;
+         );
+         FILETYPE_IMAGE: (
+           imageId: TFileImageID;
+         );
+         FILETYPE_CONFIG: (
+           configId: TFileConfigID;
+         );
+         FILETYPE_NAMES: (
+           nameNumber: SJ3UNIT.NameNumberStr;
+         );
+         FILETYPE_REPLAY, FILETYPE_CUSTOMSET, FILETYPE_EXTRAHILL: (
+           fileName: SJ3UNIT.FileStr;
+         );
+         FILETYPE_SENDME: (
+           sendmeId: TFileSendmeID;
+         );
+     end;
+
+
 var ch, ch2 : char; { n„ppisglobaalit }
 
 procedure beep(beeptapa:byte);
@@ -25,6 +57,9 @@ procedure dowindow(x1,y1,x2,y2,col:integer);
 function OpenFile(var f: file; filename: string; mode: TFileMode; optional: boolean): boolean;
 function OpenTextFile(var f: text; filename: string; mode: TFileMode; optional: boolean): boolean;
 function FindFiles(pattern: string; var FileNames: array of SJ3UNIT.FileStr; excludeTemp: boolean): integer;
+
+function OpenResource(var f: file; fileID: TFileID; mode: TFileMode; optional: boolean): boolean;
+function OpenTextResource(var f: text; fileID: TFileID; mode: TFileMode; optional: boolean): boolean;
 
 function pcomp(score,sij:longint):longint;
 
@@ -369,6 +404,62 @@ begin
  end;
 
  FindFiles:=count;
+end;
+
+
+function GetResourceFilename(fileID: TFileID): string;
+begin
+  case fileID.fileType of
+    FILETYPE_RESOURCE:
+      case fileID.resourceId of
+        FILERESOURCE_ANIM: GetResourceFilename := 'ANIM.SKI';
+        FILERESOURCE_LANGUAGES: GetResourceFilename := 'LANGBASE.SKI';
+        FILERESOURCE_HILLBASE: GetResourceFilename := 'HILLBASE.SKI';
+      end;
+    FILETYPE_IMAGE:
+      case fileID.imageId.imageType of
+        FILEIMAGE_MAIN: GetResourceFilename := 'MAIN.PCX';
+        FILEIMAGE_LOAD: GetResourceFilename := 'LOAD.PCX';
+        FILEIMAGE_FRONT: GetResourceFilename := 'FRONT'+fileID.imageId.imageIndex+'.PCX';
+        FILEIMAGE_BACK: GetResourceFilename := 'BACK'+fileID.imageId.imageIndex+'.PCX';
+      end;
+    FILETYPE_CONFIG:
+      case fileID.configId of
+        FILECONFIG_CONFIG: GetResourceFilename := 'CONFIG.SKI';
+        FILECONFIG_RECORDS: GetResourceFilename := 'HISCORE.SKI';
+        FILECONFIG_GOALS: GetResourceFilename := 'GOALS.SKI';
+        FILECONFIG_PROFILES: GetResourceFilename := 'PLAYERS.SKI';
+        FILECONFIG_MOREHILL: GetResourceFilename := 'MOREHILL.SKI';
+      end;
+    FILETYPE_NAMES:
+      GetResourceFilename := 'NAMES'+fileID.nameNumber+'.SKI';
+    FILETYPE_REPLAY:
+      GetResourceFilename := fileID.fileName+'.SJR';
+    FILETYPE_CUSTOMSET:
+      GetResourceFilename := fileID.fileName+'.SJC';
+    FILETYPE_EXTRAHILL:
+      GetResourceFilename := fileID.fileName+'.SJH';
+    FILETYPE_SENDME:
+      case fileID.sendmeId of
+        FILESENDME_SENDME: GetResourceFilename := 'SENDME.TXT';
+        FILESENDME_CUSTOMS: GetResourceFilename := 'CUSTOMS.TXT';
+        FILESENDME_EXTRAS: GetResourceFilename := 'EXTRAS.TXT';
+      end;
+  end;
+end;
+
+function OpenResource(var f: file; fileID: TFileID; mode: TFileMode; optional: boolean): boolean;
+var filename : string;
+begin
+ filename:=GetResourceFilename(fileID);
+ OpenResource:=OpenFile(f,filename,mode,optional);
+end;
+
+function OpenTextResource(var f: text; fileID: TFileID; mode: TFileMode; optional: boolean): boolean;
+var filename : string;
+begin
+ filename:=GetResourceFilename(fileID);
+ OpenTextResource:=OpenTextFile(f,filename,mode,optional);
 end;
 
 
