@@ -1839,7 +1839,7 @@ begin
 
  repeat
 
-  index2:=makemenu(168,13,154,8,8,index2,244,3,9);
+  index2:=makemenu(168,13,154,8,8,index2,244,3,255);
 
   case index2 of
   0 : leave2:=true;
