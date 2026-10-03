@@ -5,6 +5,7 @@ interface
 
 type TFileBaseName = string[8];
      TFileFullName = string[12];
+     TFilePath = string;
      TErrorHandler = procedure(IORes: integer; filename: string);
      TFileMode = (FILEMODE_READ, FILEMODE_WRITE);
 
@@ -79,59 +80,59 @@ begin
  FindFilesByPattern:=count;
 end;
 
-function FileExistsByName(filename: TFileFullName): boolean;
+function FileExistsByPath(path: TFilePath): boolean;
 begin
- FileExistsByName:=SysUtils.FileExists(filename);
+ FileExistsByPath:=SysUtils.FileExists(path);
 end;
 
-function OpenFileByName(var f: file; filename: TFileFullName; mode: TFileMode; optional: boolean): boolean;
+function OpenFileByPath(var f: file; path: TFilePath; mode: TFileMode; optional: boolean): boolean;
 begin
- Assign(f,filename);
+ Assign(f,path);
  case mode of
-   FILEMODE_READ: begin {$I-} Reset(f,1); {$I+} if ((not optional) and (IOResult<>0)) then ErrorHandler(IOResult,filename); end;
+   FILEMODE_READ: begin {$I-} Reset(f,1); {$I+} if ((not optional) and (IOResult<>0)) then ErrorHandler(IOResult,path); end;
    FILEMODE_WRITE: if (optional) then begin {$I-} Rewrite(f,1); {$I+} end else Rewrite(f,1);
  end;
- OpenFileByName:=IOResult=0;
+ OpenFileByPath:=IOResult=0;
 end;
 
-function OpenTextFileByName(var f: text; filename: TFileFullName; mode: TFileMode; optional: boolean): boolean;
+function OpenTextFileByPath(var f: text; path: TFilePath; mode: TFileMode; optional: boolean): boolean;
 begin
- Assign(f,filename);
+ Assign(f,path);
  case mode of
-   FILEMODE_READ: begin {$I-} Reset(f); {$I+} if ((not optional) and (IOResult<>0)) then ErrorHandler(IOResult,filename); end;
+   FILEMODE_READ: begin {$I-} Reset(f); {$I+} if ((not optional) and (IOResult<>0)) then ErrorHandler(IOResult,path); end;
    FILEMODE_WRITE: if (optional) then begin {$I-} Rewrite(f); {$I+} end else Rewrite(f);
  end;
- OpenTextFileByName:=IOResult=0;
+ OpenTextFileByPath:=IOResult=0;
 end;
 
-function DeleteFileByName(var f: file; filename: TFileFullName): boolean;
+function DeleteFileByPath(var f: file; path: TFilePath): boolean;
 var deleted: boolean;
 begin
  deleted:=false;
 
- if (OpenFileByName(f, filename, FILEMODE_READ, true)) then
+ if (OpenFileByPath(f, path, FILEMODE_READ, true)) then
   begin
    Close(f);
    Erase(f);
    deleted:=true; { yep, deleted }
   end;
 
- DeleteFileByName:=deleted;
+ DeleteFileByPath:=deleted;
 end;
 
-function DeleteTextFileByName(var f: text; filename: TFileFullName): boolean;
+function DeleteTextFileByPath(var f: text; path: TFilePath): boolean;
 var deleted: boolean;
 begin
  deleted:=false;
 
- if (OpenTextFileByName(f, filename, FILEMODE_READ, true)) then
+ if (OpenTextFileByPath(f, path, FILEMODE_READ, true)) then
   begin
    Close(f);
    Erase(f);
    deleted:=true; { yep, deleted }
   end;
 
- DeleteTextFileByName:=deleted;
+ DeleteTextFileByPath:=deleted;
 end;
 
 function GetFileName(fileID: TFileID): TFileFullName;
@@ -196,28 +197,48 @@ begin
 end;
 
 function FileExists(fileID: TFileID): boolean;
+var name: TFileName;
+    path: TFilePath;
 begin
- FileExists:=FileExistsByName(GetFileName(fileID));
+ name:=GetFileName(fileID);
+ path:=name;
+ FileExists:=FileExistsByPath(path);
 end;
 
 function OpenFile(var f: file; fileID: TFileID; mode: TFileMode; optional: boolean): boolean;
+var name: TFileName;
+    path: TFilePath;
 begin
- OpenFile:=OpenFileByName(f,GetFileName(fileID),mode,optional);
+ name:=GetFileName(fileID);
+ path:=name;
+ OpenFile:=OpenFileByPath(f,path,mode,optional);
 end;
 
 function OpenTextFile(var f: text; fileID: TFileID; mode: TFileMode; optional: boolean): boolean;
+var name: TFileName;
+    path: TFilePath;
 begin
- OpenTextFile:=OpenTextFileByName(f,GetFileName(fileID),mode,optional);
+ name:=GetFileName(fileID);
+ path:=name;
+ OpenTextFile:=OpenTextFileByPath(f,path,mode,optional);
 end;
 
 function DeleteFile(var f: file; fileID: TFileID): boolean;
+var name: TFileName;
+    path: TFilePath;
 begin
- DeleteFile:=DeleteFileByName(f,GetFileName(fileID));
+ name:=GetFileName(fileID);
+ path:=name;
+ DeleteFile:=DeleteFileByPath(f,path);
 end;
 
 function DeleteTextFile(var f: text; fileID: TFileID): boolean;
+var name: TFileName;
+    path: TFilePath;
 begin
- DeleteTextFile:=DeleteTextFileByName(f,GetFileName(fileID));
+ name:=GetFileName(fileID);
+ path:=name;
+ DeleteTextFile:=DeleteTextFileByPath(f,path);
 end;
 
 end.
