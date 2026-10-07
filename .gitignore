@@ -1,3 +1,8 @@
 *.o
 *.ppu
+SRC/*.o
+SRC/*.ppu
+CUSTOMS.TXT
+EXTRAS.TXT
+SENDME.TXT
 /SJ3
