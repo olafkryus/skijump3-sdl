@@ -13,6 +13,7 @@ const  NumPl = 75;  { montako pelaajaa on ylip„„t„„n }
        MaxOwnPl = 10; { montako omaa pelaajaa voi olla }
        NumWCHills = 20;  { montako m„ke„ World Cupissa }
        MaxExtraHills = 1000; { montako extra m„ke„ voi olla. CHECK!!! }
+       MaxHills = NumWCHills+MaxExtraHills;
        MaxCustoms = 200; { montako custom hill filea .SJC voi olla }
 
        HexCh : array[0..15] of char =
@@ -48,6 +49,10 @@ type Stat_type = record
 
     ImageIndexStr = SJ3File.TImageIndex;
     NameNumberStr = SJ3File.TNameNumber;
+
+    WCHillNumber = 0..NumWCHills;
+    ExtraHillNumber = 0..MaxExtraHills;
+    HillNumber = 0..MaxHills;
 
 
 
@@ -109,8 +114,8 @@ type Stat_type = record
      Hour, Minute, Second, Sec100 : Word;
     end;
 
-var NumHills, Vcode : byte;
-    NumExtraHills : word;
+var Vcode : byte;
+    NumExtraHills : ExtraHillNumber;
 
 {function getch(xx,yy:integer;bkcolor:byte):char;}
 procedure getch(xx,yy:integer;bkcolor:byte;var tempch,tempch2:char);
@@ -121,7 +126,7 @@ procedure lopputext(version:string;a1,a2:Time);
 
 function MakeMenu(x,y,length,height,items,startIndex:integer;bgcolor,phase,tab:byte):integer;
 
-function LoadHill(var KeulaX:integer;nytmaki:integer;Acthill:hill_type):byte;
+function LoadHill(var KeulaX:integer;nytmaki:HillNumber;Acthill:hill_type):byte;
 
 Function waitforkey3(xx,yy:integer;var ch:char):boolean;
 procedure teamwarning;
@@ -138,7 +143,7 @@ function makeletter(temp:integer):char;
 
 procedure resultbox(phase:byte;result:integer);
 
-function hillfile(nyt:integer):FileStr;
+function hillfile(nyt:ExtraHillNumber):FileStr;
 
 { procedure WriteExtraHillHR(index:integer);}
 
@@ -146,7 +151,7 @@ procedure CheckExtraHills;
 procedure LoadHillInfo;
 procedure GetNow(var Now:Time);
 
-function LoadInfo(nytmaki:integer;
+function LoadInfo(nytmaki:HillNumber;
                   var hill:hill_type):byte;
 
 procedure choosewindplace(var place:byte);
@@ -160,17 +165,17 @@ procedure HillMaker(phase:byte);
 procedure setgoals;
 function loadgoal(num:integer):integer;
 
-function hillkr(nytmaki:integer):integer;
-function hillname(nytmaki:integer):HillStr;
-function hillcode(nytmaki:integer):longint;
+function hillkr(nytmaki:HillNumber):integer;
+function hillname(nytmaki:HillNumber):HillStr;
+function hillcode(nytmaki:HillNumber):longint;
 
-function HRname(nytmaki:integer):NameStr;
-function HRLen(nytmaki:integer):integer;
-function HRTime(nytmaki:integer):TimeStr;
+function HRname(nytmaki:HillNumber):NameStr;
+function HRLen(nytmaki:HillNumber):integer;
+function HRTime(nytmaki:HillNumber):TimeStr;
 
-procedure SetHRinfo(nytmaki:integer;name:NameStr;len:integer;time:TimeStr);
+procedure SetHRinfo(nytmaki:HillNumber;name:NameStr;len:integer;time:TimeStr);
 
-function replayinfo(var filename, author, name:string;nytmaki,hp:integer):byte;
+function replayinfo(var filename, author, name:string;nytmaki:HillNumber;hp:integer):byte;
 
 
 procedure WriteExtras;
@@ -232,11 +237,11 @@ const GoalsFileID : SJ3File.TFileID = ( fileType: SJ3File.FILETYPE_CONFIG; confi
 
 {var osote : array [0..4000] of byte; }
 
-var HD : array[0..NumWCHills+MaxExtraHills] of ^Hillinfo_type;
+var HD : array[0..MaxHills] of ^Hillinfo_type;
 
 (*
-    mnimet : array[0..NumWCHills+MaxExtraHills] of HillStr;
-    kri : array[0..NumWCHills+MaxExtraHills] of integer;
+    mnimet : array[0..MaxHills] of HillStr;
+    kri : array[0..MaxHills] of integer;
 *)
 
 (*
@@ -671,7 +676,7 @@ begin
 end;
 
 
-function LoadHill(var KeulaX:integer;nytmaki:integer;Acthill:hill_type):byte;
+function LoadHill(var KeulaX:integer;nytmaki:HillNumber;Acthill:hill_type):byte;
 const LoadImageFileID : SJ3File.TFileID = ( fileType: SJ3File.FILETYPE_IMAGE; imageId: SJ3File.FILEIMAGE_LOAD );
 var temp : integer;
     l  : longint;
@@ -1109,29 +1114,29 @@ begin
 
 end;
 
-function HRName(nytmaki:integer):NameStr;
+function HRName(nytmaki:HillNumber):NameStr;
 begin
  HRName:=HD[nytmaki]^.HRName;
 end;
 
-function HRLen(nytmaki:integer):integer;
+function HRLen(nytmaki:HillNumber):integer;
 begin
  HRLen:=HD[nytmaki]^.HRLen;
 end;
 
-function HRTime(nytmaki:integer):TimeStr;
+function HRTime(nytmaki:HillNumber):TimeStr;
 begin
  HRTime:=HD[nytmaki]^.HRTime;
 end;
 
-procedure SetHRinfo(nytmaki:integer;name:NameStr;len:integer;time:TimeStr);
+procedure SetHRinfo(nytmaki:HillNumber;name:NameStr;len:integer;time:TimeStr);
 begin
  HD[nytmaki]^.HRName:=name;
  HD[nytmaki]^.HRLen:=len;
  HD[nytmaki]^.HRTime:=time;
 end;
 
-function hillkr(nytmaki:integer):integer;
+function hillkr(nytmaki:HillNumber):integer;
 var temp:integer;
 begin
 
@@ -1145,7 +1150,7 @@ begin
 end;
 
 
-function hillname(nytmaki:integer):HillStr;
+function hillname(nytmaki:HillNumber):HillStr;
 var str1 : string;
 begin
 
@@ -1164,7 +1169,7 @@ begin
 end;
 
 
-function hillcode(nytmaki:integer):longint;
+function hillcode(nytmaki:HillNumber):longint;
 var temp:longint;
     h : hill_type;
 begin
@@ -1338,7 +1343,7 @@ end;
 
 
 function findstart(var f1:text;
-                   nytmaki:integer):byte;
+                   nytmaki:HillNumber):byte;
 var str1:string;
     result:byte;
     out:boolean;
@@ -1364,7 +1369,7 @@ end;
 
 
 
-function hillfile(nyt:integer):FileStr;
+function hillfile(nyt:ExtraHillNumber):FileStr;
 var str1 : string;
     temp : integer;
     f2 : text;
@@ -1394,7 +1399,7 @@ end;
 
 
 
-function LoadInfo(nytmaki:integer;
+function LoadInfo(nytmaki:HillNumber;
                  var hill:hill_type):byte;
 
 var f1 : text;
@@ -1793,7 +1798,7 @@ begin
 end;
 
 
-function replayinfo(var filename, author, name:string;nytmaki,hp:integer):byte;
+function replayinfo(var filename, author, name:string;nytmaki:HillNumber;hp:integer):byte;
 var result : byte;
     str1, filefullname : string;
     temp, index2 : integer;
@@ -2035,10 +2040,10 @@ begin
 end;
 
 
-procedure WriteExtraHillHR(index:integer);
+procedure WriteExtraHillHR(index:HillNumber);
 var f1 : text;
     h : hill_type;
-    temp : integer;
+    temp : ExtraHillNumber;
     filefullname : string;
     HillFileID : SJ3File.TFileID;
 begin
@@ -2134,8 +2139,8 @@ end;
 
 procedure CheckExtraHills;
 var f1 : text;
-    temp : integer;
-    filenames : array[0..MaxExtraHills] of FileStr;
+    temp : ExtraHillNumber;
+    filenames : array[ExtraHillNumber] of FileStr;
 
 begin
  NumExtraHills:=SJ3File.FindFiles(SJ3File.FILETYPE_EXTRAHILL,filenames);
@@ -2156,7 +2161,7 @@ end;
 
 procedure LoadHillInfo;  { t„ll„ ladataan mnimet ja kri -taulut kuntoon }
 var f1 : text;
-    temp : byte;
+    temp : HillNumber;
     NowHill : hill_type;
 
 begin
@@ -2173,8 +2178,6 @@ begin
    HD[temp]^.Name:=NowHill.Name;
    HD[temp]^.Kr:=NowHill.Kr;
   end;
-
- NumHills:=NumWCHills+NumExtraHills;
 
 end;
 
@@ -2246,7 +2249,8 @@ end;
 
 
 procedure WriteExtras; { kirjoitetaan extrahillsien hillrecit }
-var temp, index : integer;
+var temp : integer;
+    index : HillNumber;
 begin
 
  for temp:=1 to NumExtraHills do
@@ -2258,7 +2262,8 @@ begin
 end;
 
 procedure ReadExtras;
-var temp,index : integer;
+var temp : integer;
+    index : HillNumber;
     h : Hill_type;
 begin
 
@@ -3201,7 +3206,7 @@ procedure NewHDs;
 var temp : integer;
 begin
 
- for temp:=0 to NumWCHills+MaxExtraHills do
+ for temp:=0 to MaxHills do
   New(HD[temp]);
 
 end;

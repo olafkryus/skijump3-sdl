@@ -12,7 +12,10 @@ const NumHiscores = 61; { 1-20=WC + 21-30=TC + 31-35=4h + 36-41=KOTH + 42-61=CC 
 
 type Profile_type = record
       name, realname : NameStr;
-      suitcolor, skicolor, kothlevel, replace, bestwchill, besthill, cstyle,skipquali : byte;
+      suitcolor, skicolor, kothlevel, replace : byte;
+      bestwchill : SJ3UNIT.WCHillNumber;
+      besthill : SJ3UNIT.HillNumber;
+      cstyle,skipquali : byte;
       bestwcjump, bestpoints, best4points, bestjump : word;
       besthillfile : FileStr;
       bestresult, best4result : string[20];
@@ -750,7 +753,7 @@ var hill, y : integer;
  var loop, loop2 : integer;
      str1 : string;
      {ch, ch2 : char; }
-     hills : byte;
+     hills : SJ3UNIT.HillNumber;
 
   begin
 

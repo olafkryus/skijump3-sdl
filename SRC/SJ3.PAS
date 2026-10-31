@@ -20,7 +20,7 @@ var
  nosamename, automatichrr : boolean;
 
  jmaara : byte;
- nytmaki : integer;
+ nytmaki : SJ3UNIT.HillNumber;
 
  wcup, jcup, cupslut : boolean;
 
@@ -4460,10 +4460,10 @@ var temp : integer;
 
 
 
-function selecthill(phase:byte;gothill:integer):byte; { 0 - train, 1 - koth, 2 - morehills, 3 - morehills KOTH }
-                                                      { uusi: 0 - train, 1 - koth }
+function selecthill(phase:byte;gothill:integer):SJ3UNIT.HillNumber; { 0 - train, 1 - koth, 2 - morehills, 3 - morehills KOTH }
+                                                                    { uusi: 0 - train, 1 - koth }
 var temp : integer;
-    hill : integer;
+    hill : SJ3UNIT.HillNumber;
     str1 : string;
     items : integer;
     leave : boolean;
