@@ -351,7 +351,7 @@ begin
 
  drawscreen;
 
- waitforkey;
+ waitforkey2;
 
  if (InvBack) then
   begin

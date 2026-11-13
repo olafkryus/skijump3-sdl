@@ -1625,7 +1625,7 @@ begin
 
      drawscreen;
 
-     waitforkey;
+     waitforkey2;
      ch:=#27;
     end;
 
