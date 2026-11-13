@@ -5868,9 +5868,7 @@ begin
 
  lopputext(version_full,Start,Now);
 
- repeat
-  SDLPort.Wait(1);
- until Crt.KeyPressed
+ waitforkey;
 
 end;
 

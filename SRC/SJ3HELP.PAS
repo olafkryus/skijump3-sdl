@@ -123,8 +123,7 @@ procedure clearchs;
 procedure waitforkey;
 {var ch : char; }
 begin
- putsaa;
- SJ3UNIT.readkbd(ch,ch2);
+ repeat Wait(1) until Crt.KeyPressed;
 end;
 
 Function waitforkey2:boolean;
