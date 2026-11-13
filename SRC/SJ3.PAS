@@ -5850,8 +5850,6 @@ begin
    WriteExtras;
   end;
 
- putsaa;
-
  MakeSendMe;
 
  write(', SENDME.TXT.');
