@@ -21,7 +21,7 @@ function Entry(Num, Pos, Who:integer; Name:string; Pts:longint; Len1, Len2:integ
 
 implementation
 
-uses sj3unit, sj3graph, sj3help, sj3pcx, sj3lang, sdlport;
+uses sj3unit, sj3graph, sj3help, sj3pcx, sj3lang;
 
 var X,Y,LastPos,Page, Plus, OwnPlayers, Players, Phase : integer;
     columns : byte;
@@ -208,7 +208,7 @@ begin
 
   good:=false;
 
-  SDLPort.WaitForKeyPress(ch,ch2);
+  SJ3UNIT.readkbd(ch,ch2);
 
   case ch of
   #13, #27 : begin status:=-1; good:=true; end;

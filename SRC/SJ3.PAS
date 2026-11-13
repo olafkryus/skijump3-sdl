@@ -1446,9 +1446,9 @@ begin
 
    ch:=#1;
 
-   if (SDLPort.KeyPressed) then
+   if (SJ3UNIT.KeyPressed) then
     begin
-     SDLPort.WaitForKeyPress(ch,ch2);
+     SJ3UNIT.readkbd(ch,ch2);
      if (ch=#0) and (ch2=#68) then begin cupslut:=true; ch:=#27; end;
      if (upcase(ch)=lch(60,1)) then
       begin
@@ -1570,9 +1570,9 @@ begin
 
   ch:=#0; ch2:=#0;
 
-  if (SDLPort.KeyPressed) then
+  if (SJ3UNIT.KeyPressed) then
    begin
-    SDLPort.WaitForKeyPress(ch,ch2);
+    SJ3UNIT.readkbd(ch,ch2);
     ch:=upcase(ch);
     if (ch=#0) and (ch2=#68) then begin cupslut:=true; ch:=#27; end;
     if (not cjumper) and ((kword(ch,ch2)=K[2]) or (ch=#13)) then out:=true; { liikkeelle }
@@ -1677,9 +1677,9 @@ begin
    if (Ch<>#27) then Ch:=#0;  { en tied„ muisteleeko se vanhoja }
    ch2:=#0;
 
-   if (SDLPort.KeyPressed) then
+   if (SJ3UNIT.KeyPressed) then
       begin
-       SDLPort.WaitForKeyPress(ch,ch2);
+       SJ3UNIT.readkbd(ch,ch2);
        ch:=upcase(ch);
 
 {       if (cjumper) then ch:=#1; }
@@ -1705,7 +1705,7 @@ begin
 
         if (cjumper) then begin ch:=#0; ch2:=#0; end;
 
-        if (ch='P') then SDLPort.WaitForKeyPress(ch,ch2);
+        if (ch='P') then SJ3UNIT.readkbd(ch,ch2);
 
       end;
 
@@ -2427,14 +2427,14 @@ begin
 
         Ch:=#0;
 
-        if (SDLPort.KeyPressed) then
+        if (SJ3UNIT.KeyPressed) then
          begin
-          SDLPort.WaitForKeyPress(ch,ch2);
+          SJ3UNIT.readkbd(ch,ch2);
           ch:=upcase(ch);
          end;
         if (ch=#0) and (Ch2=#68) then begin cupslut:=true; ch:=#27; end;
         if (Ch=#27) or (Ch=#13) then Out:=True;
-        if (Ch='P') then SDLPort.WaitForKeyPress(ch,ch2);
+        if (Ch='P') then SJ3UNIT.readkbd(ch,ch2);
 
         DeltaX:=Maki.X;
         DeltaY:=Maki.Y;
@@ -2702,9 +2702,9 @@ begin
 
        end
         else
-         if (SDLPort.KeyPressed) then
+         if (SJ3UNIT.KeyPressed) then
           begin
-           SDLPort.WaitForKeyPress(ch,ch2);
+           SJ3UNIT.readkbd(ch,ch2);
            if (ch=#0) and (ch2=#68) then cupslut:=true;
           end;
       end;
@@ -3442,7 +3442,7 @@ begin
 
   good:=false;
 
-  SDLPort.WaitForKeyPress(ch,ch2);
+  SJ3UNIT.readkbd(ch,ch2);
 {  ch2:=#1; }
 
   case ch of
@@ -4774,7 +4774,7 @@ begin
 
     DrawScreen;
 
-    SDLPort.WaitForKeyPress(ch,ch2);
+    SJ3UNIT.readkbd(ch,ch2);
 
      if (ch=#13) then { tsekataan ettei sit„ pelaajaa ole jo }
       begin

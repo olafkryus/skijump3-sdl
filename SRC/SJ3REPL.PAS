@@ -6,7 +6,7 @@ procedure replays(start:boolean;version:string;gdetail:byte);
 
 implementation
 
-uses SJ3Unit, SJ3info, SJ3Help, SJ3PCX, SJ3Graph, Tuuli, Maki, Lumi, SJ3lang, SJ3File, sdlport, x87;
+uses SJ3Unit, SJ3info, SJ3Help, SJ3PCX, SJ3Graph, Tuuli, Maki, Lumi, SJ3lang, SJ3File, x87;
 
 
 procedure replays;
@@ -297,9 +297,9 @@ var filenames : array[0..MaxReplays] of FileStr;
 
      if (mode>3) then mode:=3;
 
-     if (SDLPort.KeyPressed) then
+     if (SJ3UNIT.KeyPressed) then
       begin
-       SDLPort.WaitForKeyPress(ch,ch2);
+       SJ3UNIT.readkbd(ch,ch2);
        if {(ch2=#80) or (ch2=#72) or} (upcase(ch)='P') then mode:=3;
        if (ch2=#77) then if (mode=1) then mode:=3 else mode:=1;
        if (ch2=#75) then if (mode=2) then mode:=3 else mode:=2;
@@ -601,7 +601,7 @@ if (start) then
 
       ch:=#1; ch2:=#1; oldindex:=index;
 
-      SDLPort.WaitForKeyPress(ch,ch2);
+      SJ3UNIT.readkbd(ch,ch2);
 
       if (ch2=#77) or (ch2=#80) or (ch=' ') or (ch='+') then inc(index);
       if (ch2=#75) or (ch2=#72) or (ch='-') then dec(index);

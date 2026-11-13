@@ -213,6 +213,9 @@ procedure makevcode(version:string;reg:boolean);
 function ReadKey : char { in lieu of Crt.ReadKey } ;
 *)
 
+procedure readkbd(var tempch,tempch2:char);
+function KeyPressed : boolean;
+
 (*
 procedure Textcolor(col:byte);
 procedure Textbackground(col:byte);
@@ -267,6 +270,16 @@ function ReadKey : char ; assembler ; { toimii melkein }
    int 21h
   end {ReadKey};
 *)
+
+procedure readkbd(var tempch,tempch2:char);
+begin
+  SDLPort.WaitForKeyPress(tempch,tempch2);
+end;
+
+function KeyPressed : boolean;
+begin
+  KeyPressed:=SDLPort.KeyPressed;
+end;
 
   {
 procedure Textcolor(col:byte); begin end;
@@ -346,9 +359,9 @@ begin
   fillbox(xx,yy+6,xx+4,yy+6,col);
   DrawScreen;
 
- until (SDLPort.KeyPressed);
+ until (SJ3UNIT.KeyPressed);
 
-  SDLPort.WaitForKeyPress(tempch,tempch2);
+  SJ3UNIT.readkbd(tempch,tempch2);
 
   fillbox(xx,yy+6,xx+4,yy+6,bkcolor);
   writefont(xx,yy,tempch);
@@ -603,7 +616,7 @@ begin
   drawscreen;
 
   clearchs;
-  SDLPort.WaitForKeyPress(ch,ch2);
+  SJ3UNIT.readkbd(ch,ch2);
 
   oldindex:=index;
 
@@ -839,7 +852,7 @@ begin  { phase: 0 - DEL ei k„y, 1 - DEL k„y, 2 - 2 columns! DEL k„y }
 
    clearchs; oldindex:=index;
 
-  if (SDLPort.KeyPressed) then SDLPort.WaitForKeyPress(ch,ch2);
+  if (SJ3UNIT.KeyPressed) then SJ3UNIT.readkbd(ch,ch2);
 
    case (ch2) of
    #72,#75 :{  if (cols=2) and (tempch2=#75) and (index>tab) then dec(index,tab)
@@ -2571,7 +2584,7 @@ begin
 
 { if (place=1) then yy:=191; }
 
- while SDLPort.KeyPressed do SDLPort.WaitForKeyPress(ch,ch2);
+ while SJ3UNIT.KeyPressed do SJ3UNIT.readkbd(ch,ch2);
 
  tempboole:=false;
 
@@ -2718,7 +2731,7 @@ begin
   LoadSuit(col,0);
    AsetaPaletti;
 
-  SDLPort.WaitForKeyPress(ch,ch2);
+  SJ3UNIT.readkbd(ch,ch2);
 
    if (ch=#0) then
     begin
@@ -3172,7 +3185,7 @@ begin
 
    gotoxy(32,2+a);
 
-   SDLPort.WaitForKeyPress(ch,ch2);
+   SJ3UNIT.readkbd(ch,ch2);
 
     b:=a;
 

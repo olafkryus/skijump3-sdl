@@ -4,7 +4,7 @@ unit sj3info; { pelaaja & profiili-infoa }
 
 interface { -------------------------------------------------------------- }
 
-uses maki, sj3unit, sj3help, sj3graph, sj3lang, sj3pcx, sj3file, sdlport, x87;
+uses maki, sj3unit, sj3help, sj3graph, sj3lang, sj3pcx, sj3file, x87;
 
 procedure Init;
 
@@ -575,7 +575,7 @@ var hill, y : integer;
     drawscreen;
 
     clearchs;
-    SDLPort.WaitForKeyPress(ch,ch2);
+    SJ3UNIT.readkbd(ch,ch2);
 
     if (ch='+') or (ch=' ') or (ch2=#77)  or (ch2=#80) then inc(actcustom);
     if (ch='-') or (ch2=#75) or (ch2=#72) then dec(actcustom);
@@ -793,7 +793,7 @@ var hill, y : integer;
 
       clearchs;
 
-      SDLPort.WaitForKeyPress(ch,ch2);
+      SJ3UNIT.readkbd(ch,ch2);
 
       if ((ch2=#71) or (ch2=#83)) then HillOrder[CupHills+1]:=1; { home }
       if (ch2=#79) then HillOrder[CupHills+1]:=Hills; { end }
@@ -1635,7 +1635,7 @@ begin
 
   DrawScreen;
 
-  SDLPort.WaitForKeyPress(ch,ch2);
+  SJ3UNIT.readkbd(ch,ch2);
 
   if (ch=#0) then
    begin
@@ -1766,7 +1766,7 @@ begin
    drawscreen;
 
     sch1:=#1; sch2:=#1;
-    SDLPort.WaitForKeyPress(sch1,sch2);
+    SJ3UNIT.readkbd(sch1,sch2);
 
     if (sch1='+') or (sch2=#77) or (sch2=#80) then
      begin
