@@ -2697,7 +2697,6 @@ begin
 
       if (draw) then
        begin
-        Putsaa;
         cupslut:=WaitForKey2;
 
        end

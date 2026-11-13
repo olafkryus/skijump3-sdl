@@ -8,7 +8,6 @@ procedure beep(beeptapa:byte);
 function round(r:single):longint;
 
 function nsqrt(x:single):single;
-procedure putsaa;
 procedure clearchs;
 procedure waitforkey;
 function waitforkey2:boolean;
