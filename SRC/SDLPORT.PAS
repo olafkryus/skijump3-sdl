@@ -22,6 +22,10 @@ interface
 
   function KeyPressed : boolean;
   procedure WaitForKeyPress(var ch1, ch2 : char);
+  procedure SetTextInputRect(x, y, w, h : integer);
+  procedure StartTextInput;
+  procedure StopTextInput;
+  procedure GetTextInput(var ch1, ch2 : char);
 
   procedure Wait(ticks : integer);
 
@@ -53,6 +57,8 @@ implementation
       closeCallback: TCloseCallback;
 
       swRendering: boolean;
+
+      textInputBuffer: UTF8String;
 
 function TimerCallback(interval: UInt32; param: Pointer): UInt32; cdecl;
 var frameIntervalMs, nowMs, elapsed : LongInt;
@@ -134,6 +140,7 @@ begin
   windowMultiplier := 2;
   aspect := aspectRes;
   swRendering := false;
+  textInputBuffer := UTF8String('');
 end;
 
 procedure InitGraphics;
@@ -330,6 +337,83 @@ begin
   SDL_SetWindowFullscreen(window, flags);
 end;
 
+function UTF8ToCP865(CodePoint: Cardinal): char;
+begin
+  case CodePoint of
+    SDLK_RETURN : UTF8ToCP865:=#13;
+    SDLK_ESCAPE : UTF8ToCP865:=#27;
+    SDLK_BACKSPACE : UTF8ToCP865:=#8;
+    SDLK_TAB : UTF8ToCP865:=#9;
+
+    32..126 : UTF8ToCP865:=chr(CodePoint);
+
+    // Special characters supported by the game, OEM 865 nordic encoding is used
+    196 : UTF8ToCP865:=#142; // A with diaeresis
+    197 : UTF8ToCP865:=#143; // A with ring above
+    198 : UTF8ToCP865:=#146; // AE
+    214 : UTF8ToCP865:=#153; // O with diaeresis
+    216 : UTF8ToCP865:=#157; // O with stroke
+    220 : UTF8ToCP865:=#154; // U with diaeresis
+    223 : UTF8ToCP865:=#225; // sharp s
+
+    228 : UTF8ToCP865:=#132; // a with diaeresis
+    229 : UTF8ToCP865:=#134; // a with ring above
+    230 : UTF8ToCP865:=#145; // ae
+    246 : UTF8ToCP865:=#148; // o with diaeresis
+    248 : UTF8ToCP865:=#155; // o with stroke
+    252 : UTF8ToCP865:=#129; // u with diaeresis
+
+  else UTF8ToCP865:=#0;
+  end;
+end;
+
+function HandleSDLVersionShortcuts(keysym : TSDL_Keysym) : boolean;
+var shortcutHandled : boolean;
+begin
+  shortcutHandled:=false;
+  if ((keysym._mod and KMOD_LALT) > 0) then
+    begin
+      Case keysym.scancode of
+        SDL_SCANCODE_RETURN :
+          begin
+            toggleFullscreen;
+            shortcutHandled:=true;
+          end;
+        SDL_SCANCODE_R :
+          begin
+            ResetWindowSize;
+            shortcutHandled:=true;
+          end;
+        SDL_SCANCODE_KP_PLUS, SDL_SCANCODE_EQUALS :
+          begin
+            windowMultiplier := windowMultiplier + 1;
+            ResetWindowSize;
+            shortcutHandled:=true;
+          end;
+        SDL_SCANCODE_KP_MINUS, SDL_SCANCODE_MINUS :
+          begin
+            if (windowMultiplier > 1) then
+            begin
+              windowMultiplier := windowMultiplier - 1;
+              ResetWindowSize;
+              shortcutHandled:=true;
+            end;
+          end;
+        SDL_SCANCODE_A :
+          begin
+            if (aspect <> aspectRes) then
+              aspect := aspectRes
+            else
+              aspect := 4 / 3;
+            ResetWindowSize;
+            shortcutHandled:=true;
+          end;
+      end;
+    end;
+
+  HandleSDLVersionShortcuts:=shortcutHandled;
+end;
+
 procedure WaitForKeyPress(var ch1, ch2:char);
 var event : TSDL_Event;
     scancode: TSDL_ScanCode;
@@ -353,45 +437,7 @@ begin
         keyMod := event.key.keysym._mod;
 
         // SDL version specific shortcuts
-        if ((keyMod and KMOD_LALT) > 0) then
-        begin
-          Case scancode of
-            SDL_SCANCODE_RETURN :
-              begin
-                toggleFullscreen;
-                exit
-              end;
-            SDL_SCANCODE_R :
-              begin
-                ResetWindowSize;
-                exit
-              end;
-            SDL_SCANCODE_KP_PLUS, SDL_SCANCODE_EQUALS :
-              begin
-                windowMultiplier := windowMultiplier + 1;
-                ResetWindowSize;
-                exit
-              end;
-            SDL_SCANCODE_KP_MINUS, SDL_SCANCODE_MINUS :
-              begin
-                if (windowMultiplier > 1) then
-                begin
-                  windowMultiplier := windowMultiplier - 1;
-                  ResetWindowSize;
-                  exit
-                end;
-              end;
-            SDL_SCANCODE_A :
-              begin
-                if (aspect <> aspectRes) then
-                  aspect := aspectRes
-                else
-                  aspect := 4 / 3;
-                ResetWindowSize;
-                exit;
-              end;
-          end;
-        end;
+        if (HandleSDLVersionShortcuts(event.key.keysym)) then exit;
 
         // Special cases for key combinations used throughout the game.
         // Check for Right Alt/AltGr first, since pressing it can make Left Ctrl look as pressed too.
@@ -499,30 +545,7 @@ begin
           SDLK_KP_EQUALS : keyPressed:=SDLK_EQUALS;
         end;
 
-        Case keyPressed of
-          SDLK_RETURN : ch1:=#13;
-          SDLK_ESCAPE : ch1:=#27;
-          SDLK_BACKSPACE : ch1:=#8;
-          SDLK_TAB : ch1:=#9;
-
-          32..126 : ch1:=chr(keyPressed);
-
-          // Special characters supported by the game, OEM 865 nordic encoding is used for ch1 values
-          196 : begin ch1:=#142; exit end; // A with diaeresis
-          197 : begin ch1:=#143; exit end; // A with ring above
-          198 : begin ch1:=#146; exit end; // AE
-          214 : begin ch1:=#153; exit end; // O with diaeresis
-          216 : begin ch1:=#157; exit end; // O with stroke
-          220 : begin ch1:=#154; exit end; // U with diaeresis
-          223 : begin ch1:=#225; exit end; // sharp s
-
-          228 : begin ch1:=#132; ch2:=#36; exit end; // a with diaeresis
-          229 : begin ch1:=#134; ch2:=#26; exit end; // a with ring above
-          230 : begin ch1:=#145; exit end; // ae
-          246 : begin ch1:=#148; ch2:=#39; exit end; // o with diaeresis
-          248 : begin ch1:=#158; exit end; // o with stroke
-          252 : begin ch1:=#129; exit end; // u with diaeresis
-        end;
+        ch1:=UTF8ToCP865(keyPressed);
 
         Case keyPressed of
           SDLK_F1 : ch2:=#59;
@@ -579,6 +602,112 @@ begin
       end;
     end;
     SDL_Delay(10);
+  end;
+end;
+
+procedure SetTextInputRect(x, y, w, h : integer);
+var rect: TSDL_Rect;
+begin
+  rect.x:=x;
+  rect.y:=y;
+  rect.w:=w;
+  rect.h:=h;
+  SDL_SetTextInputRect(@rect);
+end;
+
+procedure StartTextInput;
+begin
+  SDL_StartTextInput;
+end;
+
+procedure StopTextInput;
+begin
+  SDL_StopTextInput;
+end;
+
+procedure GetTextInput(var ch1, ch2 : char);
+var event: TSDL_Event;
+
+function GetFirstUTF8CodePoint(const str: UTF8String; var l: Integer): Cardinal;
+var b1, b2, b3, b4: Byte;
+begin
+  if (length(str)=0) then
+  begin
+    GetFirstUTF8CodePoint := $0;
+    l := 0;
+    exit;
+  end;
+
+  b1:=ord(str[1]);
+  if (length(str) >= 2) then b2:=ord(str[2]) else b2:=$0;
+  if (length(str) >= 3) then b3:=ord(str[3]) else b3:=$0;
+  if (length(str) >= 4) then b4:=ord(str[4]) else b4:=$0;
+
+  if (b1 < $80) then
+  begin
+    GetFirstUTF8CodePoint := b1;
+    l := 1;
+  end
+  else if ((b1 and $E0) = $C0) then
+  begin
+    GetFirstUTF8CodePoint := ((b1 and $1F) shl 6) or (b2 and $3F);
+    l := 2;
+  end
+  else if ((b1 and $F0) = $E0) then
+  begin
+    GetFirstUTF8CodePoint := ((b1 and $0F) shl 12) or ((b2 and $3F) shl 6) or (b3 and $3F);
+    l := 3;
+  end
+  else
+  begin
+    GetFirstUTF8CodePoint := ((b1 and $07) shl 18) or ((b2 and $3F) shl 12) or ((b3 and $3F) shl 6) or (b4 and $3F);
+    l := 4;
+  end;
+end;
+
+procedure PopTextInputBuffer(var ch1, ch2 : char);
+var l : integer;
+begin
+  ch1:=#0;
+  ch2:=#0;
+
+  if (textInputBuffer<>'') then
+  begin
+    ch1:=UTF8ToCP865(GetFirstUTF8CodePoint(textInputBuffer,l));
+    Delete(textInputBuffer,1,l);
+  end;
+end;
+
+begin
+  ch1:=#0;
+  ch2:=#0;
+
+  if (textInputBuffer<>'') then PopTextInputBuffer(ch1,ch2)
+  else
+  if (SDL_PollEvent(@event) = 1) then
+  begin
+    case event.type_ of
+
+      SDL_TEXTINPUT:
+      begin
+        textInputBuffer := UTF8String(StrPas(@event.text.text[0]));
+        PopTextInputBuffer(ch1,ch2);
+      end;
+
+      SDL_KEYDOWN:
+      begin
+        // SDL version specific shortcuts
+        if (HandleSDLVersionShortcuts(event.key.keysym)) then exit;
+
+        case event.key.keysym.sym of
+          SDLK_RETURN, SDLK_KP_ENTER: ch1 := #13;
+          SDLK_ESCAPE: ch1 := #27;
+          SDLK_BACKSPACE: ch1 := #8;
+          SDLK_DELETE: ch2 := #83;
+        end;
+      end;
+
+    end;
   end;
 end;
 

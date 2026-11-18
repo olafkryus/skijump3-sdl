@@ -340,8 +340,8 @@ begin
 
 end;
 
-{function givech(xx,yy:integer;bkcolor:byte):char;}
-procedure givech(xx,yy:integer;bkcolor:byte;var tempch,tempch2:char);
+{function givekey(xx,yy:integer;bkcolor:byte):char;}
+procedure givekey(xx,yy:integer;bkcolor:byte;var tempch,tempch2:char);
 var run : integer;
     col : byte;
 
@@ -366,21 +366,81 @@ begin
   fillbox(xx,yy+6,xx+4,yy+6,bkcolor);
   writefont(xx,yy,tempch);
 
+{ givekey:=ch; }
+
+end;
+
+{function givech(xx,yy:integer;bkcolor:byte):char;}
+procedure givech(xx,yy:integer;bkcolor:byte;var tempch,tempch2:char);
+var run : integer;
+    col : byte;
+
+begin
+
+ run:=0;
+
+ repeat
+
+  inc(run); if (run>20) then run:=0;
+
+  col:=240;
+  if (run>10) then col:=bkcolor;
+
+  fillbox(xx,yy+6,xx+4,yy+6,col);
+  DrawScreen;
+
+  sdlport.GetTextInput(tempch,tempch2);
+
+ until ((tempch<>#0) or (tempch2<>#0));
+
+  fillbox(xx,yy+6,xx+4,yy+6,bkcolor);
+  writefont(xx,yy,tempch);
+
 { givech:=ch; }
 
 end;
 
 
 
-{function getch(xx,yy:integer;bkcolor:byte):char;}
-procedure getch(xx,yy:integer;bkcolor:byte;var tempch,tempch2:char);
+{function getkey(xx,yy:integer;bkcolor:byte):char;}
+procedure getkey(xx,yy:integer;bkcolor:byte;var tempch,tempch2:char);
+var x, y, w, h : integer;
 begin
 
-  fillbox(xx-2,yy-2,xx+6,yy+8,bkcolor);
+   x:=xx-2;
+   y:=yy-2;
+   w:=2+4+2;
+   h:=2+6+2;
+
+   fillbox(x, y, x+w, y+h, bkcolor);
+
+   givekey(xx,yy,bkcolor,tempch,tempch2);
+
+   DrawScreen;
+
+{  getkey:=ch; }
+
+end;
+
+{function getch(xx,yy:integer;bkcolor:byte):char;}
+procedure getch(xx,yy:integer;bkcolor:byte;var tempch,tempch2:char);
+var x, y, w, h : integer;
+begin
+
+   x:=xx-2;
+   y:=yy-2;
+   w:=2+4+2;
+   h:=2+6+2;
+   sdlport.SetTextInputRect(x, y, w, h);
+   sdlport.StartTextInput;
+
+   fillbox(x, y, x+w, y+h, bkcolor);
 
    givech(xx,yy,bkcolor,tempch,tempch2);
 
    DrawScreen;
+
+   sdlport.StopTextInput;
 
 {  getch:=ch; }
 
@@ -392,7 +452,15 @@ var newstr : string;
     out : boolean;
     cx : integer;
 {    tempch, tempch2 : char; }
+    x, y, w, h : integer;
 begin
+
+ x:=xx-2;
+ y:=yy-2;
+ w:=2+maxlength+2;
+ h:=2+5+2;
+ sdlport.SetTextInputRect(x, y, w, h);
+ sdlport.StartTextInput;
 
  out:=false;
 
@@ -402,11 +470,12 @@ begin
 
    cx:=fontlen(newstr);
 
-   fillbox(xx-2,yy-2,xx+maxlength+2,yy+7,bkcolor);
+   fillbox(x, y, x+w, y+h, bkcolor);
    writefont(xx,yy,newstr);
 
    DrawScreen;
 
+   sdlport.SetTextInputRect(xx+cx, y, w-(xx-x)-cx, h);
    givech(xx+cx,yy,bkcolor,ch,ch2);
 
    if (ch2=#83) then delete(newstr,1,length(newstr));
@@ -429,6 +498,7 @@ begin
 
  if (ch=#27) then newstr:=oldstr;
 
+ sdlport.StopTextInput;
  getstr:=newstr;
 
 
@@ -441,7 +511,15 @@ var newstr : string;
     out : boolean;
     cx : integer;
 {    tempch, tempch2 : char; }
+    x, y, w, h : integer;
 begin
+
+ x:=xx-2;
+ y:=yy-2;
+ w:=2+(maxchars*7)+2;
+ h:=2+6+2;
+ sdlport.SetTextInputRect(x, y, w, h);
+ sdlport.StartTextInput;
 
  out:=false;
 
@@ -451,11 +529,12 @@ begin
 
    cx:=fontlen(newstr);
 
-   fillbox(xx-2,yy-2,xx+(maxchars*7)+2,yy+8,bkcolor);
+   fillbox(x, y, x+w, y+h, bkcolor);
    writefont(xx,yy,newstr);
 
    DrawScreen;
 
+   sdlport.SetTextInputRect(xx+cx, y, w-(xx-x)-cx, h);
    givech(xx+cx,yy,bkcolor,ch,ch2);
 
    if (ch2=#83) then delete(newstr,1,length(newstr));
@@ -478,6 +557,7 @@ begin
 
  if (ch=#27) then newstr:='ÿ';
 
+ sdlport.StopTextInput;
  getstr2:=newstr;
 
 
@@ -2023,7 +2103,7 @@ begin
             fillbox(180,y-2,319,y+7,243);
             fillarea(180,y-2,319,y+7,63);
 
-            getch(185,y,245,tch.A,tch.B);
+            getkey(185,y,245,tch.A,tch.B);
             tch.A:=upcase(tch.A);
 
             str2:=keyname(kword(tch.A,tch.B));
@@ -2592,7 +2672,7 @@ begin
 
  ewritefont(xx,yy,lstr(15));
 
- getch(xx+1,yy,243,ch,ch2);
+ getkey(xx+1,yy,243,ch,ch2);
 
   if (ch=#0) and (ch2=#68) then begin tempboole:=true; ch:=#27; end;
 
