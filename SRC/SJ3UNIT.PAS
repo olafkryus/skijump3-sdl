@@ -371,7 +371,7 @@ begin
 end;
 
 {function givech(xx,yy:integer;bkcolor:byte):char;}
-procedure givech(xx,yy:integer;bkcolor:byte;var tempch,tempch2:char);
+procedure givech(xx,yy:integer;bkcolor:byte;charToOverwrite:char;var tempch,tempch2:char);
 var run : integer;
     col : byte;
 
@@ -386,7 +386,12 @@ begin
   col:=240;
   if (run>10) then col:=bkcolor;
 
-  fillbox(xx,yy+6,xx+4,yy+6,col);
+  if (charToOverwrite<>#0) then
+  begin
+    fillbox(xx,yy,xx+fontlen(charToOverwrite)-1,yy+5,col);
+    if (run>10) then writefont(xx,yy,charToOverwrite);
+  end
+  else fillbox(xx,yy+6,xx+4,yy+6,col);
   DrawScreen;
 
   sdlport.GetTextInput(tempch,tempch2);
@@ -436,7 +441,7 @@ begin
 
    fillbox(x, y, x+w, y+h, bkcolor);
 
-   givech(xx,yy,bkcolor,tempch,tempch2);
+   givech(xx,yy,bkcolor,#0,tempch,tempch2);
 
    DrawScreen;
 
@@ -448,9 +453,10 @@ end;
 
 
 function getstr(xx,yy,maxlength:integer;oldstr:string;bkcolor:byte):string;
-var newstr, newstrBeforeCursor : string;
-    out : boolean;
+var newstr, newstrBeforeCursor, tmpstr : string;
+    out, overwrite : boolean;
     cx, cpos : integer;
+    charToOverwrite : char;
 {    tempch, tempch2 : char; }
     x, y, w, h : integer;
 begin
@@ -466,10 +472,12 @@ begin
 
  newstr:=oldstr;
  cpos:=length(newstr)+1;
+ overwrite:=false;
 
   repeat
 
    newstrBeforeCursor:=copy(newstr,1,cpos-1);
+   if (overwrite) then if (cpos <= length(newstr)) then charToOverwrite:=newstr[cpos] else charToOverwrite:=' ' else charToOverwrite:=#0;
    cx:=fontlen(newstrBeforeCursor);
 
    fillbox(x, y, x+w, y+h, bkcolor);
@@ -478,7 +486,7 @@ begin
    DrawScreen;
 
    sdlport.SetTextInputRect(xx+cx, y, w-(xx-x)-cx, h);
-   givech(xx+cx,yy,bkcolor,ch,ch2);
+   givech(xx+cx,yy,bkcolor,charToOverwrite,ch,ch2);
 
    case ch of
 
@@ -487,6 +495,7 @@ begin
      #83: if (cpos<=length(newstr)) then delete(newstr,cpos,1);
      #75: if (cpos>1) then dec(cpos,1);
      #77: if (cpos<=length(newstr)) then inc(cpos,1);
+     #82: overwrite:=(not overwrite);
      #71: cpos:=1;
      #79: cpos:=length(newstr)+1;
      end;
@@ -503,7 +512,7 @@ begin
      if (fontlen(ch)>0) then
      begin
        tmpstr:=newstr;
-       insert(ch,tmpstr,cpos);
+       if (overwrite and (cpos <= length(tmpstr))) then tmpstr[cpos]:=ch else insert(ch,tmpstr,cpos);
        if (fontlen(tmpstr) <= maxlength) then begin newstr:=tmpstr; inc(cpos,1); end;
      end;
 
@@ -522,9 +531,10 @@ end;
 
 
 function getstr2(xx,yy,maxchars:integer;oldstr:string;bkcolor:byte):string;
-var newstr, newstrBeforeCursor : string;
-    out : boolean;
+var newstr, newstrBeforeCursor, tmpstr : string;
+    out, overwrite : boolean;
     cx, cpos : integer;
+    charToOverwrite : char;
 {    tempch, tempch2 : char; }
     x, y, w, h : integer;
 begin
@@ -540,10 +550,12 @@ begin
 
  newstr:=oldstr;
  cpos:=length(newstr)+1;
+ overwrite:=false;
 
   repeat
 
    newstrBeforeCursor:=copy(newstr,1,cpos-1);
+   if (overwrite) then if (cpos <= length(newstr)) then charToOverwrite:=newstr[cpos] else charToOverwrite:=' ' else charToOverwrite:=#0;
    cx:=fontlen(newstrBeforeCursor);
 
    fillbox(x, y, x+w, y+h, bkcolor);
@@ -552,7 +564,7 @@ begin
    DrawScreen;
 
    sdlport.SetTextInputRect(xx+cx, y, w-(xx-x)-cx, h);
-   givech(xx+cx,yy,bkcolor,ch,ch2);
+   givech(xx+cx,yy,bkcolor,charToOverwrite,ch,ch2);
 
    case ch of
 
@@ -561,6 +573,7 @@ begin
      #83: if (cpos<=length(newstr)) then delete(newstr,cpos,1);
      #75: if (cpos>1) then dec(cpos,1);
      #77: if (cpos<=length(newstr)) then inc(cpos,1);
+     #82: overwrite:=(not overwrite);
      #71: cpos:=1;
      #79: cpos:=length(newstr)+1;
      end;
@@ -577,7 +590,7 @@ begin
      if (fontlen(ch)>0) then
      begin
        tmpstr:=newstr;
-       insert(ch,tmpstr,cpos);
+       if (overwrite and (cpos <= length(tmpstr))) then tmpstr[cpos]:=ch else insert(ch,tmpstr,cpos);
        if (length(tmpstr) <= maxchars) then begin newstr:=tmpstr; inc(cpos,1); end;
      end;
 
