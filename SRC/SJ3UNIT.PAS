@@ -448,9 +448,9 @@ end;
 
 
 function getstr(xx,yy,maxlength:integer;oldstr:string;bkcolor:byte):string;
-var newstr : string;
+var newstr, newstrBeforeCursor : string;
     out : boolean;
-    cx : integer;
+    cx, cpos : integer;
 {    tempch, tempch2 : char; }
     x, y, w, h : integer;
 begin
@@ -465,10 +465,12 @@ begin
  out:=false;
 
  newstr:=oldstr;
+ cpos:=length(newstr)+1;
 
   repeat
 
-   cx:=fontlen(newstr);
+   newstrBeforeCursor:=copy(newstr,1,cpos-1);
+   cx:=fontlen(newstrBeforeCursor);
 
    fillbox(x, y, x+w, y+h, bkcolor);
    writefont(xx,yy,newstr);
@@ -478,19 +480,32 @@ begin
    sdlport.SetTextInputRect(xx+cx, y, w-(xx-x)-cx, h);
    givech(xx+cx,yy,bkcolor,ch,ch2);
 
-   if (ch2=#83) then delete(newstr,1,length(newstr));
-
    case ch of
 
-   #8 : delete(newstr,length(newstr),1);
+   #0 :
+     case ch2 of
+     #83: if (cpos<=length(newstr)) then delete(newstr,cpos,1);
+     #75: if (cpos>1) then dec(cpos,1);
+     #77: if (cpos<=length(newstr)) then inc(cpos,1);
+     #71: cpos:=1;
+     #79: cpos:=length(newstr)+1;
+     end;
+
+   #8 : if (cpos>1) then begin delete(newstr,cpos-1,1); dec(cpos,1); end;
 
    #13,#27 : out:=true;
 {
-   #32..#254 : if (cx+7 < maxlength) then newstr:=newstr+tempch; }
+   #32..#254 : if (fontlen(newstr)+7 < maxlength) then newstr:=newstr+tempch; }
 
 {   '0'..'9','A'..'Z','','Ž','™',
    'a'..'z','†','„','”','.',',','#','!','(',')','-', }
-   #32..#254 : if (cx+7 < maxlength) and (fontlen(ch)>0) then newstr:=newstr+ch;
+   #32..#254 :
+     if (fontlen(ch)>0) then
+     begin
+       tmpstr:=newstr;
+       insert(ch,tmpstr,cpos);
+       if (fontlen(tmpstr) <= maxlength) then begin newstr:=tmpstr; inc(cpos,1); end;
+     end;
 
    end; { case }
 
@@ -507,9 +522,9 @@ end;
 
 
 function getstr2(xx,yy,maxchars:integer;oldstr:string;bkcolor:byte):string;
-var newstr : string;
+var newstr, newstrBeforeCursor : string;
     out : boolean;
-    cx : integer;
+    cx, cpos : integer;
 {    tempch, tempch2 : char; }
     x, y, w, h : integer;
 begin
@@ -524,10 +539,12 @@ begin
  out:=false;
 
  newstr:=oldstr;
+ cpos:=length(newstr)+1;
 
   repeat
 
-   cx:=fontlen(newstr);
+   newstrBeforeCursor:=copy(newstr,1,cpos-1);
+   cx:=fontlen(newstrBeforeCursor);
 
    fillbox(x, y, x+w, y+h, bkcolor);
    writefont(xx,yy,newstr);
@@ -537,19 +554,32 @@ begin
    sdlport.SetTextInputRect(xx+cx, y, w-(xx-x)-cx, h);
    givech(xx+cx,yy,bkcolor,ch,ch2);
 
-   if (ch2=#83) then delete(newstr,1,length(newstr));
-
    case ch of
 
-   #8 : delete(newstr,length(newstr),1);
+   #0 :
+     case ch2 of
+     #83: if (cpos<=length(newstr)) then delete(newstr,cpos,1);
+     #75: if (cpos>1) then dec(cpos,1);
+     #77: if (cpos<=length(newstr)) then inc(cpos,1);
+     #71: cpos:=1;
+     #79: cpos:=length(newstr)+1;
+     end;
+
+   #8 : if (cpos>1) then begin delete(newstr,cpos-1,1); dec(cpos,1); end;
 
    #13,#27 : out:=true;
 {
-   #32..#254 : if (cx+7 < maxlength) then newstr:=newstr+tempch; }
+   #32..#254 : if (length(newstr) < maxchars) then newstr:=newstr+tempch; }
 
 {   '0'..'9','A'..'Z','','Ž','™',
    'a'..'z','†','„','”','.',',','#','!','(',')','-', }
-   #32..#254 : if (length(newstr) < maxchars) and (fontlen(ch)>0) then newstr:=newstr+ch;
+   #32..#254 :
+     if (fontlen(ch)>0) then
+     begin
+       tmpstr:=newstr;
+       insert(ch,tmpstr,cpos);
+       if (length(tmpstr) <= maxchars) then begin newstr:=tmpstr; inc(cpos,1); end;
+     end;
 
    end; { case }
 

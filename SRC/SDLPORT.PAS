@@ -627,6 +627,7 @@ end;
 
 procedure GetTextInput(var ch1, ch2 : char);
 var event: TSDL_Event;
+    keyMod: UInt16;
 
 function GetFirstUTF8CodePoint(const str: UTF8String; var l: Integer): Cardinal;
 var b1, b2, b3, b4: Byte;
@@ -696,6 +697,8 @@ begin
 
       SDL_KEYDOWN:
       begin
+        keyMod := event.key.keysym._mod;
+
         // SDL version specific shortcuts
         if (HandleSDLVersionShortcuts(event.key.keysym)) then exit;
 
@@ -704,6 +707,19 @@ begin
           SDLK_ESCAPE: ch1 := #27;
           SDLK_BACKSPACE: ch1 := #8;
           SDLK_DELETE: ch2 := #83;
+
+          SDLK_LEFT : ch2:=#75;
+          SDLK_RIGHT : ch2:=#77;
+          SDLK_INSERT : ch2:=#82;
+          SDLK_HOME : ch2:=#71;
+          SDLK_END : ch2:=#79;
+
+          SDLK_KP_1: if ((keyMod and KMOD_NUM) = 0) then ch2:=#79;
+          SDLK_KP_4: if ((keyMod and KMOD_NUM) = 0) then ch2:=#75;
+          SDLK_KP_6: if ((keyMod and KMOD_NUM) = 0) then ch2:=#77;
+          SDLK_KP_7: if ((keyMod and KMOD_NUM) = 0) then ch2:=#71;
+          SDLK_KP_0: if ((keyMod and KMOD_NUM) = 0) then ch2:=#82;
+          SDLK_KP_PERIOD: if ((keyMod and KMOD_NUM) = 0) then ch2:=#83;
         end;
       end;
 
